@@ -14,7 +14,8 @@
     "socket.io": "~0.9.16",
     "plates": "~0.4.8",
     "underscore": "~1.4.4",
-    "winston": "~0.7.2"
+    "winston": "~0.7.2",
+    "moment": "2.5.x"
   },
   "devDependencies": {
     "api-easy": "0.3.2",
