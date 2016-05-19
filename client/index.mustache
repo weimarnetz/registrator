@@ -72,14 +72,16 @@
             
       <h4>Knoten</h4>
       <table id="knoten-listing" class="table table-hover">
-        <tr>
+        <thead>
+          <tr>
+            
+            <th data-sort-method='number'>&#x2116;</th>
+            <th>MAC</th>
+            <th data-sort-method='date'>created at</th>
+            <th class='sort-default' data-sort-order='desc' data-sort-method='date'>last seen</th>
           
-          <th>&#x2116;</th>
-          <th>MAC</th>
-          <th>created at</th>
-          <th>last seen <i class="icon-angle-down">&#x21A7;</i></th>
-          
-        </tr>
+          </tr>
+        </thead>
         
         {{#knoten}}
         <tr id="knoten-nr-{{number}}">
@@ -114,6 +116,14 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/static/plates.js"></script>
     <script src="/static/echtzeit.js"></script>
-    
+    <script src='/static/tablesort.min.js'></script>
+     
+    <!-- Include sort types you need -->
+    <script src='/static/tablesort.number.js'></script>
+    <script src='/static/tablesort.date.js'></script>
+     
+    <script>
+        new Tablesort(document.getElementById('knoten-listing'));
+      </script> 
   </body>
 </html>
