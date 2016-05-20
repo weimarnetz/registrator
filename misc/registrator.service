@@ -1,0 +1,13 @@
+[Service]
+ExecStart=/usr/bin/nodejs /usr/local/share/registrator/app.js
+WorkingDirectory=/usr/local/share/registrator
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=registrator
+User=registrator
+Group=registrator
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
