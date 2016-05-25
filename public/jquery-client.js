@@ -13,7 +13,7 @@
   
   // First, config object (JSON): 
   config = {
-    "BaseURL": "http://reg.weimarnetz.de/",
+    "BaseURL": "https://reg.weimarnetz.de/",
     "network": "ffweimar"
   },
   
