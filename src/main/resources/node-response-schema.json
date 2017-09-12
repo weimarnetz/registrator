@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {},
+  "properties": {
+    "message": {
+      "type": "string"
+    },
+    "result": {
+      "properties": {
+        "created_at": {
+          "type": "integer"
+        },
+        "key": {
+          "type": "integer"
+        },
+        "last_seen": {
+          "type": "integer"
+        },
+        "location": {
+          "type": "string"
+        },
+        "mac": {
+          "type": "string"
+        },
+        "network": {
+          "type": "string"
+        },
+        "number": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "status": {
+      "type": "integer"
+    }
+  },
+  "type": "object"
+}
