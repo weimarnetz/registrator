@@ -5,7 +5,13 @@ import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.inject.Inject;
@@ -109,18 +115,33 @@ public class RegistratorController {
             @ApiResponse(code = 404, message = "Network not found")
 
     })
-    @PutMapping(value = "/{network}/knoten")
+    @PutMapping(value = "/{network}/knoten/{nodeNumber}")
     public @ResponseBody ResponseEntity<NodeResponse> updateNodePut(
             @PathVariable String network,
+            @PathVariable int nodeNumber,
             @RequestParam String mac,
             @RequestParam String pass
     ) {
-        Node node = registratorRepository.findByNetworkAndMac(network, mac);
+        Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
         long currentTime = new Date().getTime();
-        if (pass.equals(node.getPass())) {
+        if (node == null) {
+            node = Node.builder()
+                    .number(nodeNumber)
+                    .mac(mac)
+                    .pass(pass)
+                    .createdAt(currentTime)
+                    .lastSeen(currentTime)
+                    .network(network)
+                    .location("/" + network + "/knoten/" + nodeNumber)
+                    .build();
+            NodeResponse nodeResponse = NodeResponse.builder().node(node).status(201).message("created").build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(nodeResponse);
+        }
+        if (mac.equals(node.getMac()) && pass.equals(node.getPass())) {
             node.setCreatedAt(currentTime);
             registratorRepository.save(node);
-            return ResponseEntity.ok(null);
+            NodeResponse nodeResponse = NodeResponse.builder().node(node).status(200).message("updated").build();
+            return ResponseEntity.ok(nodeResponse);
         } else {
         }
         return ResponseEntity.ok(null);
@@ -133,12 +154,13 @@ public class RegistratorController {
             @ApiResponse(code = 404, message = "Network not found")
 
     })
-    @GetMapping(value = "/PUT/{network}/knoten")
+    @GetMapping(value = "/PUT/{network}/knoten/{nodeNumber}")
     public @ResponseBody ResponseEntity<NodeResponse> updateNodeGet(
             @PathVariable String network,
+            @PathVariable int nodeNumber,
             @RequestParam String mac,
             @RequestParam String pass
     ) {
-        return updateNodePut(network, mac, pass);
+        return updateNodePut(network, nodeNumber, mac, pass);
     }
 }

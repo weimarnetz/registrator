@@ -142,7 +142,7 @@ public class RestMvcTest {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
                 .when().put("/ffweimar/knoten/2?mac=12345&pass=test123")
-                .then().assertThat().statusCode(is(201))
+                .then().assertThat().statusCode(is(401))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON));
     }
 
