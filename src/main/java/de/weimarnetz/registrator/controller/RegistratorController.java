@@ -138,7 +138,7 @@ public class RegistratorController {
             return ResponseEntity.status(HttpStatus.CREATED).body(nodeResponse);
         }
         if (mac.equals(node.getMac()) && pass.equals(node.getPass())) {
-            node.setCreatedAt(currentTime);
+            node.setLastSeen(currentTime);
             registratorRepository.save(node);
             NodeResponse nodeResponse = NodeResponse.builder().node(node).status(200).message("updated").build();
             return ResponseEntity.ok(nodeResponse);
