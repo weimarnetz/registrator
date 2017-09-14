@@ -104,7 +104,7 @@
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>1.5.3</version>
+				<version>1.5.5</version>
 				<executions>
 					<execution>
 						<id>generate-docs</id>
@@ -122,7 +122,7 @@
 					<dependency>
 						<groupId>org.springframework.restdocs</groupId>
 						<artifactId>spring-restdocs-asciidoctor</artifactId>
-						<version>LATEST</version>
+						<version>1.2.1.RELEASE</version>
 					</dependency>
 				</dependencies>
 			</plugin>
