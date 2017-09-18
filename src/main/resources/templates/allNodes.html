@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title th:text="${name} + '> ' + ${network}"/>
+    <title th:text="#{reg.name} + '> ' + ${network}"/>
 
     <!-- generic webapp shit-->
     <link href='http://eins78.github.com/appstrakt/style.css' rel='stylesheet' type='text/css'/>
@@ -20,7 +20,7 @@
     {{#active}}
 
     <h3 class="lead">
-        network: <kbd>{{name}}
+        network: <kbd><span th:text="${network}"/>
         <small><a href="{{url}}" title="{{name}} Website" data-overide-link="true">
             <i class="icon-external-link">Link</i>
         </a></small>
