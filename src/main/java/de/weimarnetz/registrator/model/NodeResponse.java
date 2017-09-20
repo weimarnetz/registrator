@@ -8,8 +8,8 @@ import lombok.Value;
 @Value
 public class NodeResponse {
 
-    String message;
-    int status;
+    private String message;
+    private int status;
     @JsonProperty("result")
-    Node node;
+    private Node node;
 }

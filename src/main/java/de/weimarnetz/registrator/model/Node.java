@@ -5,7 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
@@ -23,18 +27,18 @@ public class Node {
 
     @Id
     @GeneratedValue
-    long key;
+    private long key;
     @Min(2)
     @Max(1000)
-    int number;
-    String mac;
+    private int number;
+    private String mac;
     @JsonProperty("created_at")
-    long createdAt;
+    private long createdAt;
     @JsonProperty("last_seen")
-    long lastSeen;
-    String location;
-    String network;
+    private long lastSeen;
+    private String location;
+    private String network;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    String pass;
+    private String pass;
 
 }

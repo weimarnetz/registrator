@@ -10,8 +10,8 @@ import java.util.List;
 @Value
 public class NodesResponse {
 
-    String message;
-    int status;
+    private String message;
+    private int status;
     @JsonProperty("result")
-    List<Node> node;
+    private List<Node> node;
 }
