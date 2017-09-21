@@ -23,6 +23,7 @@ import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.model.NodeResponse;
 import de.weimarnetz.registrator.model.NodesResponse;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
+import de.weimarnetz.registrator.services.NodeNumberService;
 
 @RestController
 @Slf4j
@@ -30,6 +31,8 @@ public class RegistratorController {
 
     @Inject
     private RegistratorRepository registratorRepository;
+    @Inject
+    private NodeNumberService nodeNumberService;
 
     @GetMapping(value = {"/time",
             "/GET/time"})
@@ -47,6 +50,7 @@ public class RegistratorController {
             @PathVariable String network,
             @PathVariable int nodeNumber) {
         log.warn(nodeNumber + " " + network);
+        nodeNumberService.getNextAvailableNodeNumber(network);
 
         Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
         if (node != null) {
