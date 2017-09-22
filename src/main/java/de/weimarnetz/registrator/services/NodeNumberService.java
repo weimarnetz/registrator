@@ -38,7 +38,7 @@ public class NodeNumberService {
         if (start > end)
             return end + 1;
 
-        if (start != list.get(start))
+        if (minNodeNumber - start != list.get(start))
             return start;
 
         int mid = (start + end) / 2;

@@ -5,10 +5,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import javax.inject.Inject;
 import java.util.List;
+import java.util.Properties;
 
 import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
@@ -16,8 +22,8 @@ import de.weimarnetz.registrator.repository.RegistratorRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-@ContextConfiguration(classes = SomeClassTestsConfig.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class)
 public class NodeNumberServiceTest {
 
     @Mock
@@ -25,6 +31,9 @@ public class NodeNumberServiceTest {
 
     @InjectMocks
     private NodeNumberService nodeNumberService;
+
+    @Inject
+    private PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer;
 
     @Test
     public void nextNodeNumberOnEmptyList() {
@@ -41,7 +50,7 @@ public class NodeNumberServiceTest {
     @Test
     public void nextNodeNumberOnFilledList() {
         // given
-        when(registratorRepository.findAllByNetwork("testnet")).thenReturn(Lists.newArrayList(getNodeList(0, 1, 2, 3, 4, 6)));
+        when(registratorRepository.findAllByNetwork("testnet")).thenReturn(Lists.newArrayList(getNodeList(2, 3, 4, 6)));
 
         // when
         int nextAvailableNodeNumber = nodeNumberService.getNextAvailableNodeNumber("testnet");
@@ -58,5 +67,21 @@ public class NodeNumberServiceTest {
         return nodeList;
     }
 
+    @Configuration
+    static class ContextConfiguration {
+
+        @Bean
+        public PropertySourcesPlaceholderConfigurer properties() throws Exception {
+            final PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
+            Properties properties = new Properties();
+
+            properties.setProperty("nodenumber.min", "2");
+            properties.setProperty("nodenumber.max", "10");
+
+            pspc.setProperties(properties);
+            return pspc;
+        }
+
+    }
 
 }
