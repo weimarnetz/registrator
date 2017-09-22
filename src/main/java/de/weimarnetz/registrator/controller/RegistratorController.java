@@ -1,5 +1,6 @@
 package de.weimarnetz.registrator.controller;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import de.weimarnetz.registrator.exceptions.NoMoreNodesException;
 import de.weimarnetz.registrator.model.Node;
@@ -52,12 +52,6 @@ public class RegistratorController {
     public @ResponseBody ResponseEntity<NodeResponse> getSingleNode(
             @PathVariable String network,
             @PathVariable int nodeNumber) {
-        try {
-            nodeNumberService.getNextAvailableNodeNumber(network);
-        } catch (NoMoreNodesException e) {
-            log.error("No more node numbers available", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
 
         Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
         if (node != null) {
@@ -67,22 +61,11 @@ public class RegistratorController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping(value = {"/{network}/knoten", "/GET/{network}/knoten"})
-    public @ResponseBody ResponseEntity<NodesResponse> getNodes(
-            @PathVariable String network) {
-        NodesResponse nodesResponse = NodesResponse.builder()
-                .node(registratorRepository.findAllByNetwork(network))
-                .message("Ok")
-                .status(200)
-                .build();
-        return ResponseEntity.ok(nodesResponse);
-    }
-
     @ApiResponses({
+            @ApiResponse(code = 200, message = "MAC already registered!"),
             @ApiResponse(code = 201, message = "Created!"),
-            @ApiResponse(code = 303, message = "MAC already registered!"),
-            @ApiResponse(code = 404, message = "Network not found")
-
+            @ApiResponse(code = 404, message = "Network not found"),
+            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
     })
     @PostMapping(value = "/{network}/knoten")
     public @ResponseBody ResponseEntity<NodeResponse> registerNodePost(
@@ -100,14 +83,51 @@ public class RegistratorController {
                     .build();
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(nodeResponse);
         }
-        return ResponseEntity.created(UriComponentsBuilder.fromHttpUrl("http://weimarnetz.de").build().toUri()).body(null);
+        long currentTime = new Date().getTime();
+        if (node != null && node.getPass().equals(pass)) {
+            node.setLastSeen(currentTime);
+            registratorRepository.save(node);
+            NodeResponse nodeResponse = NodeResponse.builder().status(303).message("MAC already registered").node(node).build();
+            return ResponseEntity.ok(nodeResponse);
+        }
+        int newNodeNumber;
+        try {
+            newNodeNumber = nodeNumberService.getNextAvailableNodeNumber(network);
+        } catch (NoMoreNodesException e) {
+            log.error("No more node numbers available", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        Node newNode = Node.builder()
+                .number(newNodeNumber)
+                .createdAt(currentTime)
+                .lastSeen(currentTime)
+                .mac(mac)
+                .pass(pass)
+                .network(network)
+                .location("")
+                .build();
+        NodeResponse nodeResponse = NodeResponse.builder().node(newNode).status(201).message("Node created!").build();
+        URI locationUri = URI.create("https://reg.weimarnetz.de");
+        return ResponseEntity.created(locationUri).body(nodeResponse);
+    }
+
+    @GetMapping(value = { "/{network}/knoten", "/GET/{network}/knoten" })
+    public @ResponseBody
+    ResponseEntity<NodesResponse> getNodes(
+            @PathVariable String network) {
+        NodesResponse nodesResponse = NodesResponse.builder()
+                .node(registratorRepository.findAllByNetwork(network))
+                .message("Ok")
+                .status(200)
+                .build();
+        return ResponseEntity.ok(nodesResponse);
     }
 
     @ApiResponses({
             @ApiResponse(code = 201, message = "Created!"),
             @ApiResponse(code = 303, message = "MAC already registered!"),
-            @ApiResponse(code = 404, message = "Network not found")
-
+            @ApiResponse(code = 404, message = "Network not found"),
+            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
     })
     @GetMapping(value = "/POST/{network}/knoten")
     public @ResponseBody ResponseEntity<NodeResponse> registerNodeGet(
@@ -134,6 +154,9 @@ public class RegistratorController {
             @RequestParam String mac,
             @RequestParam String pass
     ) {
+        if (!nodeNumberService.isNodeNumberValid(nodeNumber)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
         Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
         long currentTime = new Date().getTime();
         if (node == null) {
@@ -146,6 +169,7 @@ public class RegistratorController {
                     .network(network)
                     .location("/" + network + "/knoten/" + nodeNumber)
                     .build();
+            registratorRepository.save(node);
             NodeResponse nodeResponse = NodeResponse.builder().node(node).status(201).message("created").build();
             return ResponseEntity.status(HttpStatus.CREATED).body(nodeResponse);
         }
@@ -162,8 +186,8 @@ public class RegistratorController {
             @ApiResponse(code = 200, message = "OK!"),
             @ApiResponse(code = 201, message = "Created!"),
             @ApiResponse(code = 401, message = "Wrong pass!!"),
-            @ApiResponse(code = 404, message = "Network not found")
-
+            @ApiResponse(code = 404, message = "Network not found"),
+            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
     })
     @GetMapping(value = "/PUT/{network}/knoten/{nodeNumber}")
     public @ResponseBody ResponseEntity<NodeResponse> updateNodeGet(

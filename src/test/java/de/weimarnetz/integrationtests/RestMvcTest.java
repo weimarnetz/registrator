@@ -1,9 +1,17 @@
 package de.weimarnetz.integrationtests;
 
 
-import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.specification.RequestSpecification;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
+import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
+
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,20 +22,13 @@ import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.inject.Inject;
-
 import de.weimarnetz.registrator.RegistratorApplication;
 import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
 
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
-import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.specification.RequestSpecification;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = RegistratorApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -114,7 +115,9 @@ public class RestMvcTest {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
                 .when().post("/ffweimar/knoten?mac=34556&pass=test")
-                .then().assertThat().statusCode(is(201)).and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON));
+                .then().assertThat().statusCode(is(201))
+                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
+                .and().body("result.number", is(4));
     }
 
     @Test
@@ -122,9 +125,9 @@ public class RestMvcTest {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
                 .when().post("/ffweimar/knoten?mac=23456&pass=test")
-                .then().assertThat().statusCode(is(303))
+                .then().assertThat().statusCode(is(200))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
-                .and().body("result.number", is(2));
+                .and().body("result.number", is(3));
     }
 
     @Test
