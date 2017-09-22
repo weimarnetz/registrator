@@ -1,8 +1,11 @@
 package de.weimarnetz.registrator.controller;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,16 +17,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.inject.Inject;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-
+import de.weimarnetz.registrator.exceptions.NoMoreNodesException;
 import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.model.NodeResponse;
 import de.weimarnetz.registrator.model.NodesResponse;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
 import de.weimarnetz.registrator.services.NodeNumberService;
+
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
@@ -49,8 +52,12 @@ public class RegistratorController {
     public @ResponseBody ResponseEntity<NodeResponse> getSingleNode(
             @PathVariable String network,
             @PathVariable int nodeNumber) {
-        log.warn(nodeNumber + " " + network);
-        nodeNumberService.getNextAvailableNodeNumber(network);
+        try {
+            nodeNumberService.getNextAvailableNodeNumber(network);
+        } catch (NoMoreNodesException e) {
+            log.error("No more node numbers available", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 
         Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
         if (node != null) {
@@ -146,7 +153,6 @@ public class RegistratorController {
             registratorRepository.save(node);
             NodeResponse nodeResponse = NodeResponse.builder().node(node).status(200).message("updated").build();
             return ResponseEntity.ok(nodeResponse);
-        } else {
         }
         return ResponseEntity.ok(null);
     }
