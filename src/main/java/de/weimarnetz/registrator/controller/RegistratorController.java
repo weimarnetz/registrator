@@ -123,7 +123,8 @@ public class RegistratorController {
             @ApiResponse(code = 200, message = "OK!"),
             @ApiResponse(code = 201, message = "Created!"),
             @ApiResponse(code = 401, message = "Wrong pass!!"),
-            @ApiResponse(code = 404, message = "Network not found")
+            @ApiResponse(code = 404, message = "Network not found"),
+            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
 
     })
     @PutMapping(value = "/{network}/knoten/{nodeNumber}")
