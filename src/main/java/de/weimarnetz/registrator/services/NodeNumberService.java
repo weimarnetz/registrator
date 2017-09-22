@@ -35,6 +35,10 @@ public class NodeNumberService {
 
     }
 
+    public boolean isNodeNumberValid(int nodeNumber) {
+        return nodeNumber >= minNodeNumber && nodeNumber <= maxNodeNumber;
+    }
+
     private int findFirstMissing(List<Integer> list, int start, int end) {
         if (list.isEmpty()) {
             return minNodeNumber;

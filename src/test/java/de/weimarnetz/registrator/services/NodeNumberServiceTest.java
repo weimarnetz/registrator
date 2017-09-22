@@ -123,4 +123,31 @@ public class NodeNumberServiceTest {
         return nodeList;
     }
 
+    @Test
+    public void nodeNumberToSmall() {
+        // when
+        boolean nodeNumberValid = nodeNumberService.isNodeNumberValid(1);
+
+        // then
+        assertThat(nodeNumberValid).isFalse();
+    }
+
+    @Test
+    public void nodeNumberToBig() {
+        // when
+        boolean nodeNumberValid = nodeNumberService.isNodeNumberValid(11);
+
+        // then
+        assertThat(nodeNumberValid).isFalse();
+    }
+
+    @Test
+    public void nodeNumberInRange() {
+        // when
+        boolean nodeNumberValid = nodeNumberService.isNodeNumberValid(5);
+
+        // then
+        assertThat(nodeNumberValid).isTrue();
+    }
+
 }
