@@ -120,7 +120,7 @@ public class RegistratorController {
         return ResponseEntity.created(locationUri).body(nodeResponse);
     }
 
-    @GetMapping(value = { "/{network}/knoten", "/GET/{network}/knoten" })
+    @GetMapping(value = { "/{network}/knoten", "/GET/{network}/knoten", "/{network}/list", "/GET/{network}/list" })
     public @ResponseBody
     ResponseEntity<NodesResponse> getNodes(
             @PathVariable String network) {
@@ -194,7 +194,8 @@ public class RegistratorController {
             NodeResponse nodeResponse = NodeResponse.builder().node(node).status(200).message("updated").build();
             return ResponseEntity.ok(nodeResponse);
         }
-        return ResponseEntity.ok(null);
+        NodeResponse nodeResponse = NodeResponse.builder().message("Unauthorized, wrong pass").status(401).node(node).build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(nodeResponse);
     }
 
     @ApiResponses({
