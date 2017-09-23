@@ -22,6 +22,7 @@ import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.model.NodeResponse;
 import de.weimarnetz.registrator.model.NodesResponse;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
+import de.weimarnetz.registrator.services.NetworkVerificationService;
 import de.weimarnetz.registrator.services.NodeNumberService;
 
 import io.swagger.annotations.ApiResponse;
@@ -36,6 +37,8 @@ public class RegistratorController {
     private RegistratorRepository registratorRepository;
     @Inject
     private NodeNumberService nodeNumberService;
+    @Inject
+    private NetworkVerificationService networkVerificationService;
 
     @GetMapping(value = {"/time",
             "/GET/time"})
@@ -53,6 +56,9 @@ public class RegistratorController {
             @PathVariable String network,
             @PathVariable int nodeNumber) {
 
+        if (!networkVerificationService.isNetworkValid(network)) {
+            return ResponseEntity.notFound().build();
+        }
         Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
         if (node != null) {
             NodeResponse nodeResponse = NodeResponse.builder().node(node).status(HttpStatus.OK.value()).message("ok").build();
@@ -73,6 +79,9 @@ public class RegistratorController {
             @RequestParam String mac,
             @RequestParam String pass
     ) {
+        if (!networkVerificationService.isNetworkValid(network)) {
+            return ResponseEntity.notFound().build();
+        }
         Node node = registratorRepository.findByNetworkAndMac(network, mac);
         if (node != null && ! node.getPass().equals(pass)) {
             // use PUT method instead!
@@ -115,6 +124,9 @@ public class RegistratorController {
     public @ResponseBody
     ResponseEntity<NodesResponse> getNodes(
             @PathVariable String network) {
+        if (!networkVerificationService.isNetworkValid(network)) {
+            return ResponseEntity.notFound().build();
+        }
         NodesResponse nodesResponse = NodesResponse.builder()
                 .node(registratorRepository.findAllByNetwork(network))
                 .message("Ok")
@@ -154,6 +166,9 @@ public class RegistratorController {
             @RequestParam String mac,
             @RequestParam String pass
     ) {
+        if (!networkVerificationService.isNetworkValid(network)) {
+            return ResponseEntity.notFound().build();
+        }
         if (!nodeNumberService.isNodeNumberValid(nodeNumber)) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
