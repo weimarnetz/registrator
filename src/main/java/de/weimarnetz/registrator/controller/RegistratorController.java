@@ -177,10 +177,11 @@ public class RegistratorController {
         if (!nodeNumberService.isNodeNumberValid(nodeNumber)) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
+        Node nodeByNumber = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
+        Node nodeByMAC = registratorRepository.findByNetworkAndMac(network, mac);
         long currentTime = new Date().getTime();
-        if (node == null) {
-            node = Node.builder()
+        if (nodeByNumber == null && nodeByMAC == null) {
+            nodeByNumber = Node.builder()
                     .number(nodeNumber)
                     .mac(mac)
                     .pass(passwordService.encryptPassword(pass))
@@ -189,17 +190,17 @@ public class RegistratorController {
                     .network(network)
                     .location(linkService.getNodeLocation(network, nodeNumber))
                     .build();
-            registratorRepository.save(node);
-            NodeResponse nodeResponse = NodeResponse.builder().node(node).status(201).message("created").build();
+            registratorRepository.save(nodeByNumber);
+            NodeResponse nodeResponse = NodeResponse.builder().node(nodeByNumber).status(201).message("created").build();
             return ResponseEntity.status(HttpStatus.CREATED).body(nodeResponse);
         }
-        if (mac.equals(node.getMac()) && passwordService.isPasswordValid(pass, node.getPass())) {
-            node.setLastSeen(currentTime);
-            registratorRepository.save(node);
-            NodeResponse nodeResponse = NodeResponse.builder().node(node).status(200).message("updated").build();
+        if (nodeByNumber != null && mac.equals(nodeByNumber.getMac()) && passwordService.isPasswordValid(pass, nodeByNumber.getPass())) {
+            nodeByNumber.setLastSeen(currentTime);
+            registratorRepository.save(nodeByNumber);
+            NodeResponse nodeResponse = NodeResponse.builder().node(nodeByNumber).status(200).message("updated").build();
             return ResponseEntity.ok(nodeResponse);
         }
-        NodeResponse nodeResponse = NodeResponse.builder().message("Unauthorized, wrong pass").status(401).node(node).build();
+        NodeResponse nodeResponse = NodeResponse.builder().message("Unauthorized, wrong pass").status(401).node(nodeByNumber).build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(nodeResponse);
     }
 

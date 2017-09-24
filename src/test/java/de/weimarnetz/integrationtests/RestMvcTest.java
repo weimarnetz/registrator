@@ -14,6 +14,7 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 import javax.inject.Inject;
 
 import io.restassured.response.ValidatableResponse;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -86,6 +87,12 @@ public class RestMvcTest {
             registratorRepository.save(node2);
         }
     }
+
+    @After
+    public void tearDown() {
+        registratorRepository.deleteAll();
+    }
+
 
     @Test
     public void testTimeEndpoint() {
