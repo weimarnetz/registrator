@@ -1,0 +1,87 @@
+header, section, article, footer {
+    min-width: 520px;
+    max-width: 780px;
+}
+
+.table, #console {
+    font-size: 11pt;
+}
+
+.table tr, .table td {
+    font-weight: normal;
+}
+
+#console {
+    text-align: left;
+    height: 113px;
+    overflow: scroll;
+}
+
+.tooltip.in {
+    opacity: 1;
+    filter: none;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    visibility: hidden;
+}
+
+[class^="icon-"]::before, [class*=" icon-"]::before {
+    visibility: visible;
+}
+
+.dark a,
+.dark a:link,
+.dark a:active {
+    color: hsl(188, 50%, 50%);
+    text-shadow: none !important;
+}
+
+th.sort-header::-moz-selection {
+    background: transparent;
+}
+
+th.sort-header::selection {
+    background: transparent;
+}
+
+th.sort-header {
+    cursor: pointer;
+
+}
+
+th.sort-header::-moz-selection,
+th.sort-header::selection {
+    background: transparent;
+
+}
+
+table th.sort-header:after {
+    content: '';
+    float: right;
+    margin-top: 7px;
+    border-width: 0 4px 4px;
+    border-style: solid;
+    border-color: #404040 transparent;
+    visibility: hidden;
+
+}
+
+table th.sort-header:hover:after {
+    visibility: visible;
+
+}
+
+table th.sort-up:after,
+table th.sort-down:after,
+table th.sort-down:hover:after {
+    visibility: visible;
+    opacity: 0.4;
+
+}
+
+table th.sort-up:after {
+    border-bottom: none;
+    border-width: 4px 4px 0;
+
+}

@@ -1,0 +1,144 @@
+/*
+  BOOTSTRAP from CDN
+*/
+@import url('//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.no-icons.min.css');
+/*
+  ICONS
+  - Font Awesome from CDN
+*/
+@import url('//netdna.bootstrapcdn.com/font-awesome/3.0/css/font-awesome.css');
+/*
+  WEBFONTS
+   - Lato, Source Code Pro from Google Webfonts
+*/
+@import url('//fonts.googleapis.com/css?family=Lato:300,400|Source+Code+Pro');
+
+/*
+  BASE TYPO
+*/
+body {
+    margin: 4em auto;
+    background: hsl(0, 0%, 61.8%);
+    font-family: 'Lato', sans-serif;
+    font-size: 12pt;
+    text-align: center;
+    color: hsl(0, 0%, 22%);
+    text-rendering: optimizelegibility !important;
+}
+
+kbd, code, tt, pre {
+    font-family: 'Source Code Pro', sans-serif;
+    font-weight: 400; /*Source Code Pro Normal*/
+}
+
+h1 small {
+    font-size: 70%;
+}
+
+footer {
+    font-size: 9pt;
+}
+
+/* light & dark */
+.light,
+header,
+section,
+article {
+    background-color: hsl(0, 0%, 100%);
+}
+
+.dark,
+footer {
+    color: hsl(0, 0%, 61.8%);
+    background-color: hsl(0, 0%, 22%);
+}
+
+.muted {
+    color: hsla(0, 0%, 22%, 0.618);
+}
+
+.dark .muted,
+footer .muted {
+    color: hsla(0, 0%, 61.8%, 0.618);
+}
+
+/* whitespace */
+p + table,
+table + table {
+    margin-top: 1em;
+}
+
+/* selections*/
+::selection,
+::-moz-selection {
+    background: hsla(188, 78%, 34%, 0.618);
+    color: hsla(0, 0%, 100%, 1);
+    text-shadow: 0px 0px 2px hsla(0, 0%, 0%, 0.618);
+}
+
+/*
+ LINKS
+*/
+a, a:link, a:active {
+    color: hsl(188, 100%, 28%);
+}
+
+a:hover {
+    color: hsl(188, 100%, 18%);
+    text-shadow: 0px 0px 2px hsla(188, 100%, 61.8%, 0.618);
+    text-decoration: none;
+}
+
+/*
+  TABLES
+*/
+table {
+    margin: 1em auto;
+}
+
+.table th {
+    font-weight: 400; /*Lato Normal*/
+}
+
+.table td {
+    font-weight: 300; /*Lato Book*/
+}
+
+/* table centering*/
+/* first, make them all centered*/
+.table tr th, .table tr td {
+    text-align: center;
+}
+
+/* then, make last rows left */
+.table tr th:last-child, .table tr td:last-child {
+    text-align: right;
+}
+
+/* lastly, make first row right (so 1 row is right, too) */
+.table tr th:first-child, .table tr td:first-child {
+    text-align: left;
+}
+
+/*
+  ALERTS, LABELS, BADGES
+*/
+.label,
+.badge {
+    font-weight: 400;
+}
+
+.alert {
+    text-align: inherit;
+}
+
+.alert-danger, .alert-error {
+    color: hsl(8, 62%, 39%);
+    background-color: hsl(6, 62%, 82%);
+    border-color: hsl(6, 40%, 75%);
+}
+
+.label-info,
+.badge-info {
+    background-color: hsl(188, 50%, 45%);
+}

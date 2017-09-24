@@ -4,9 +4,9 @@
     <title th:text="#{reg.name} + '> ' + ${network}"/>
 
     <!-- generic webapp shit-->
-    <link href='http://eins78.github.com/appstrakt/style.css' rel='stylesheet' type='text/css'/>
+    <link href='/css/style.css' rel='stylesheet' type='text/css'/>
     <!-- registrator styles-->
-    <link href='/static/style.css' rel='stylesheet' type='text/css'/>
+    <link href='/css/registrator.css' rel='stylesheet' type='text/css'/>
 
 </head>
 <body>
@@ -66,37 +66,34 @@
         </div>
     </div>
 
-    <h4>Knoten</h4>
+    <h4 th:text="#{table.headline}"></h4>
     <table id="knoten-listing" class="table table-hover">
         <thead>
         <tr>
 
             <th data-sort-method='number'>&#x2116;</th>
-            <th>MAC</th>
-            <th data-sort-method='date'>created at</th>
-            <th class='sort-default' data-sort-order='desc' data-sort-method='date'>last seen</th>
+            <th th:text="#{table.mac_address}"></th>
+            <th data-sort-method='date' th:text="#{table.created_at}"></th>
+            <th class='sort-default' data-sort-order='desc' data-sort-method='date' th:text="#{table.last_seen}"></th>
 
         </tr>
         </thead>
 
-        {{#knoten}}
-        <tr id="knoten-nr-{{number}}">
-            <td class="knoten-number">
+        <tr th:each="node : ${nodeList}" id="knoten-nr-{{number}}">
+            <td class="knoten-number" th:text="${node.number}">
                 <kbd><a href="/GET/{{network}}/knoten/{{number}}">
-                    {{number}}
                 </a></kbd>
             </td>
             <td class="knoten-mac">
-                <kbd>{{mac}}</kbd>
+                <kbd th:text="${node.mac}">{{mac}}</kbd>
             </td>
             <td class="knoten-created_at">
-                <kbd>{{created_at}}</kbd>
+                <kbd th:text="${#dates.format(new java.util.Date(node.createdAt), 'dd.MM.yyyy HH:mm:ss')}"></kbd>
             </td>
             <td class="knoten-last_seen">
-                <kbd>{{last_seen}}</kbd>
+                <kbd th:text="${#dates.format(new java.util.Date(node.lastSeen), 'dd.MM.yyyy HH:mm:ss')}"></kbd>
             </td>
         </tr>
-        {{/knoten}}
 
     </table>
 
@@ -110,13 +107,13 @@
 <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/static/plates.js"></script>
-<script src="/static/echtzeit.js"></script>
-<script src='/static/tablesort.min.js'></script>
+<script src="/js/plates.js"></script>
+<script src="/js/echtzeit.js"></script>
+<script src='/js/tablesort.min.js'></script>
 
 <!-- Include sort types you need -->
-<script src='/static/tablesort.number.js'></script>
-<script src='/static/tablesort.date.js'></script>
+<script src='/js/tablesort.number.js'></script>
+<script src='/js/tablesort.date.js'></script>
 
 <script>
     new Tablesort(document.getElementById('knoten-listing'));
