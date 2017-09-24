@@ -120,6 +120,7 @@ public class RegistratorController {
                 .network(network)
                 .location(linkService.getNodeLocation(network, newNodeNumber))
                 .build();
+        registratorRepository.save(newNode);
         NodeResponse nodeResponse = NodeResponse.builder().node(newNode).status(201).message("Node created!").build();
         return ResponseEntity.created(linkService.getNodeLocationUri(network, newNodeNumber)).body(nodeResponse);
     }
