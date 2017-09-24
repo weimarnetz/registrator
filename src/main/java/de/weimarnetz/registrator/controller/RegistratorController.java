@@ -1,6 +1,5 @@
 package de.weimarnetz.registrator.controller;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
@@ -22,6 +21,7 @@ import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.model.NodeResponse;
 import de.weimarnetz.registrator.model.NodesResponse;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
+import de.weimarnetz.registrator.services.LinkService;
 import de.weimarnetz.registrator.services.NetworkVerificationService;
 import de.weimarnetz.registrator.services.NodeNumberService;
 import de.weimarnetz.registrator.services.PasswordService;
@@ -42,6 +42,8 @@ public class RegistratorController {
     private NetworkVerificationService networkVerificationService;
     @Inject
     private PasswordService passwordService;
+    @Inject
+    private LinkService linkService;
 
     @GetMapping(value = {"/time",
             "/GET/time"})
@@ -116,11 +118,10 @@ public class RegistratorController {
                 .mac(mac)
                 .pass(passwordService.encryptPassword(pass))
                 .network(network)
-                .location("")
+                .location(linkService.getNodeLocation(network, newNodeNumber))
                 .build();
         NodeResponse nodeResponse = NodeResponse.builder().node(newNode).status(201).message("Node created!").build();
-        URI locationUri = URI.create("https://reg.weimarnetz.de");
-        return ResponseEntity.created(locationUri).body(nodeResponse);
+        return ResponseEntity.created(linkService.getNodeLocationUri(network, newNodeNumber)).body(nodeResponse);
     }
 
     @GetMapping(value = { "/{network}/knoten", "/GET/{network}/knoten", "/{network}/list", "/GET/{network}/list" })
@@ -185,7 +186,7 @@ public class RegistratorController {
                     .createdAt(currentTime)
                     .lastSeen(currentTime)
                     .network(network)
-                    .location("/" + network + "/knoten/" + nodeNumber)
+                    .location(linkService.getNodeLocation(network, nodeNumber))
                     .build();
             registratorRepository.save(node);
             NodeResponse nodeResponse = NodeResponse.builder().node(node).status(201).message("created").build();
