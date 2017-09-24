@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import de.weimarnetz.registrator.RegistratorApplication;
 import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
+import de.weimarnetz.registrator.services.PasswordService;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -63,6 +64,8 @@ public class RestMvcTest {
 
     @Inject
     private RegistratorRepository registratorRepository;
+    @Inject
+    private PasswordService passwordService;
 
     private RequestSpecification spec;
 
@@ -75,8 +78,8 @@ public class RestMvcTest {
                 documentationConfiguration(this.restDocumentation))
                 .build();
         if (registratorRepository.count() < 2) {
-            Node node1 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("12345").number(2).pass("test").location("here").build();
-            Node node2 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("23456").number(3).pass("test").location("here").build();
+            Node node1 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("12345").number(2).pass(passwordService.encryptPassword("test")).location("here").build();
+            Node node2 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("23456").number(3).pass(passwordService.encryptPassword("test")).location("here").build();
             registratorRepository.save(node1);
             registratorRepository.save(node2);
         }

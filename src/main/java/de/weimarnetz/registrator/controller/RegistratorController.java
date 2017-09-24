@@ -24,6 +24,7 @@ import de.weimarnetz.registrator.model.NodesResponse;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
 import de.weimarnetz.registrator.services.NetworkVerificationService;
 import de.weimarnetz.registrator.services.NodeNumberService;
+import de.weimarnetz.registrator.services.PasswordService;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -39,6 +40,8 @@ public class RegistratorController {
     private NodeNumberService nodeNumberService;
     @Inject
     private NetworkVerificationService networkVerificationService;
+    @Inject
+    private PasswordService passwordService;
 
     @GetMapping(value = {"/time",
             "/GET/time"})
@@ -83,7 +86,7 @@ public class RegistratorController {
             return ResponseEntity.notFound().build();
         }
         Node node = registratorRepository.findByNetworkAndMac(network, mac);
-        if (node != null && ! node.getPass().equals(pass)) {
+        if (node != null && !passwordService.isPasswordValid(pass, node.getPass())) {
             // use PUT method instead!
             NodeResponse nodeResponse = NodeResponse.builder()
                     .message("method not allowed")
@@ -93,7 +96,7 @@ public class RegistratorController {
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(nodeResponse);
         }
         long currentTime = new Date().getTime();
-        if (node != null && node.getPass().equals(pass)) {
+        if (node != null && passwordService.isPasswordValid(pass, node.getPass())) {
             node.setLastSeen(currentTime);
             registratorRepository.save(node);
             NodeResponse nodeResponse = NodeResponse.builder().status(303).message("MAC already registered").node(node).build();
@@ -111,7 +114,7 @@ public class RegistratorController {
                 .createdAt(currentTime)
                 .lastSeen(currentTime)
                 .mac(mac)
-                .pass(pass)
+                .pass(passwordService.encryptPassword(pass))
                 .network(network)
                 .location("")
                 .build();
@@ -178,7 +181,7 @@ public class RegistratorController {
             node = Node.builder()
                     .number(nodeNumber)
                     .mac(mac)
-                    .pass(pass)
+                    .pass(passwordService.encryptPassword(pass))
                     .createdAt(currentTime)
                     .lastSeen(currentTime)
                     .network(network)
@@ -188,7 +191,7 @@ public class RegistratorController {
             NodeResponse nodeResponse = NodeResponse.builder().node(node).status(201).message("created").build();
             return ResponseEntity.status(HttpStatus.CREATED).body(nodeResponse);
         }
-        if (mac.equals(node.getMac()) && pass.equals(node.getPass())) {
+        if (mac.equals(node.getMac()) && passwordService.isPasswordValid(pass, node.getPass())) {
             node.setLastSeen(currentTime);
             registratorRepository.save(node);
             NodeResponse nodeResponse = NodeResponse.builder().node(node).status(200).message("updated").build();
