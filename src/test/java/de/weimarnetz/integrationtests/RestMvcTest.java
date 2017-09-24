@@ -2,6 +2,7 @@ package de.weimarnetz.integrationtests;
 
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static io.restassured.path.json.JsonPath.from;
 import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
@@ -12,6 +13,7 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 
 import javax.inject.Inject;
 
+import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -168,5 +170,48 @@ public class RestMvcTest {
                 .accept("application/json")
                 .when().put("/NOT_OUR_NETWORK/knoten/2?mac=12345&pass=test123")
                 .then().assertThat().statusCode(is(404));
+    }
+
+    @Test
+    public void testUpdateNodeNumberInvalidPass() {
+        String response = RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().post("/ffweimar/knoten?mac=54321&pass=54321").asString();
+
+       String nodenumber = from(response).get("result.number").toString();
+
+       RestAssured.given(this.spec).port(port)
+               .accept("application/json")
+               .when().put("/ffweimar/knoten/"+nodenumber+"?mac=54321&pass=54322")
+               .then().assertThat().statusCode(is(401));
+    }
+
+    @Test
+    public void testUpdateNodeNumberInvalidMac() {
+        String response = RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().post("/ffweimar/knoten?mac=444&pass=54321").asString();
+
+        Integer nodenumber = Integer.parseInt(from(response).get("result.number").toString());
+
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().put("/ffweimar/knoten/"+nodenumber+"?mac=445&pass=54321")
+                .then().assertThat().statusCode(is(401));
+    }
+
+    @Test
+    public void testUpdateNodeNumberInvalidNodenumber() {
+        String response = RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().post("/ffweimar/knoten?mac=8888&pass=54321").asString();
+
+        Integer nodenumber = Integer.parseInt(from(response).get("result.number").toString());
+
+
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().put("/ffweimar/knoten/"+nodenumber+23+"?mac=8888&pass=54321")
+                .then().assertThat().statusCode(is(401));
     }
 }
