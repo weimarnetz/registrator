@@ -168,6 +168,5 @@ public class RestMvcTest {
                 .accept("application/json")
                 .when().put("/NOT_OUR_NETWORK/knoten/2?mac=12345&pass=test123")
                 .then().assertThat().statusCode(is(404));
-
     }
 }
