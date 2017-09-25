@@ -7,4 +7,5 @@ public class NetworkInformation {
 
     private int maxNodeNumber;
     private int minNodeNumber;
+    private int leaseDays;
 }

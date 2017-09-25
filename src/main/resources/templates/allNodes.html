@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <title th:text="#{reg.name} + '> ' + ${network}"/>
 
@@ -16,9 +16,6 @@
 </header>
 
 <section id="content">
-    {{#network}}
-    {{#active}}
-
     <h3 class="lead">
         network: <kbd><span th:text="${network}"/>
         <small><a href="{{url}}" title="{{name}} Website" data-overide-link="true">
@@ -35,13 +32,10 @@
         </tr>
         <tr>
             <td>
-                <kbd>{{minimum}}..{{maximum}}</kbd>
+                <kbd th:text="${networkConfig.minNodeNumber} + '..' + ${networkConfig.maxNodeNumber}"></kbd>
             </td>
             <td>
-                <kbd>
-                    {{#lease_days}}{{lease_days}}{{/lease_days}}
-                    {{^lease_days}}unknown!{{/lease_days}}
-                </kbd>
+                <kbd th:text="${networkConfig.leaseDays}"></kbd>
             </td>
             <td>
                 <kbd>
@@ -52,8 +46,6 @@
             </td>
         </tr>
     </table>
-    {{/active}}
-    {{/network}}
 
     <h4>
         Activity

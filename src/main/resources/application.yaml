@@ -3,9 +3,11 @@ network:
     testnet:
         max-node-number: 10
         min-node-number: 2
+        lease-days: 5
     ffweimar:
         max-node-number: 1000
         min-node-number: 2
+        lease-days: 30
 spring:
     jackson:
         serialization:
