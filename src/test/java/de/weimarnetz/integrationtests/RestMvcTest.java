@@ -13,7 +13,6 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 
 import javax.inject.Inject;
 
-import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -150,6 +149,25 @@ public class RestMvcTest {
                 .then().assertThat().statusCode(is(200))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
                 .and().body("result.last_seen", greaterThan(456L));
+    }
+
+    @Test
+    public void testCreateNodeNumberWithPut() {
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().put("/ffweimar/knoten/10?mac=54321&pass=test")
+                .then().assertThat().statusCode(is(201))
+                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
+                .and().body("result.number", is(10));
+    }
+
+    @Test
+    public void testUpdateNodeNumberInvalidPasswordWithPost() {
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().post("/ffweimar/knoten?mac=12345&pass=test1")
+                .then().assertThat().statusCode(is(405))
+                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON));
     }
 
     @Test

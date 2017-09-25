@@ -1,17 +1,16 @@
 package de.weimarnetz.registrator.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Data;
-import lombok.experimental.Tolerate;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Builder;
+import lombok.Data;
+import lombok.experimental.Tolerate;
 
 @Data
 @Builder
@@ -28,8 +27,6 @@ public class Node {
     @Id
     @GeneratedValue
     private long key;
-    @Min(2)
-    @Max(1000)
     private int number;
     private String mac;
     @JsonProperty("created_at")

@@ -1,0 +1,17 @@
+network:
+  map:
+    testnet:
+        max-node-number: 10
+        min-node-number: 2
+    ffweimar:
+        max-node-number: 1000
+        min-node-number: 2
+spring:
+    jackson:
+        serialization:
+            indent_output: true
+    messages:
+        basename: i18n/messages
+        cache-seconds: -1
+        encoding: UTF-8
+stage: testing

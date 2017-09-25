@@ -1,18 +1,19 @@
 package de.weimarnetz.registrator.services;
 
-import java.util.List;
+import javax.inject.Inject;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import de.weimarnetz.registrator.configuration.NetworksConfiguration;
 
 
 @Component
 public class NetworkVerificationService {
 
-    @Value("#{'${networks}'.split(',')}")
-    private List<String> validNetworks;
+    @Inject
+    private NetworksConfiguration networksConfiguration;
 
     public boolean isNetworkValid(String network) {
-        return validNetworks.contains(network);
+        return networksConfiguration.getMap().containsKey(network);
     }
 }

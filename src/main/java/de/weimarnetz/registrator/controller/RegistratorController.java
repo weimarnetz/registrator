@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.weimarnetz.registrator.exceptions.NetworkNotFoundException;
 import de.weimarnetz.registrator.exceptions.NoMoreNodesException;
 import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.model.NodeResponse;
@@ -110,6 +111,9 @@ public class RegistratorController {
         } catch (NoMoreNodesException e) {
             log.error("No more node numbers available", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (NetworkNotFoundException e) {
+            log.error("Network {} not found!", network, e);
+            return ResponseEntity.notFound().build();
         }
         Node newNode = Node.builder()
                 .number(newNodeNumber)
@@ -174,8 +178,13 @@ public class RegistratorController {
         if (!networkVerificationService.isNetworkValid(network)) {
             return ResponseEntity.notFound().build();
         }
-        if (!nodeNumberService.isNodeNumberValid(nodeNumber)) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        try {
+            if (!nodeNumberService.isNodeNumberValid(nodeNumber, network)) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        } catch (NetworkNotFoundException e) {
+            log.error("Network {} not found!", network, e);
+            return ResponseEntity.notFound().build();
         }
         Node nodeByNumber = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
         Node nodeByMAC = registratorRepository.findByNetworkAndMac(network, mac);
