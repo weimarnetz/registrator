@@ -73,16 +73,34 @@ use of HTTP status codes.
 == Time
 Just returns the current server time.
 
-operation::time[]
+operation::time[snippets='curl-request,http-request,http-response,response-body,response-fields']
 
 [[resources-querynode]]
 == Node
 The Node resource is used to get a Node.
 
-operation::queryNodes[]
+operation::queryNodes[snippets='curl-request,http-request,http-response,response-body,response-fields']
 
 [[resources-querynodes]]
 == Nodes
 The Nodes resource is used to get a list of Nodes.
 
-operation::queryAllNodes[]
+operation::queryAllNodes[snippets='curl-request,http-request,http-response,response-body,response-fields']
+
+[[resources-addnode]]
+== Add node
+Adding a node returns the full node object
+
+operation::addNode[snippets='curl-request,http-request,http-response,response-body,response-fields']
+
+[[resources-updateode]]
+== Add node with given node number
+Adding a node returns the full node object
+
+operation::addGivenNodeNumber[snippets='curl-request,http-request,http-response,response-body,response-fields']
+
+[[resources-updateode]]
+== Update node
+Updating a node returns the full node object
+
+operation::updateNode[snippets='curl-request,http-request,http-response,response-body,response-fields']

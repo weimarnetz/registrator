@@ -7,7 +7,7 @@ network:
     ffweimar:
         max-node-number: 1000
         min-node-number: 2
-        lease-days: 30
+        lease-days: 90
 spring:
     jackson:
         serialization:
