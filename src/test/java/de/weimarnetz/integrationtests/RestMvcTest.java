@@ -13,6 +13,7 @@ import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.restassured3.operation.preprocess.UriModifyingOperationPreprocessor;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
@@ -27,10 +28,12 @@ import static io.restassured.path.json.JsonPath.from;
 import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.restassured3.operation.preprocess.RestAssuredPreprocessors.modifyUris;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = RegistratorApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -60,6 +63,7 @@ public class RestMvcTest {
     );
     private static final String NODE_RESPONSE_SCHEMA_JSON = "node-response-schema.json";
     private static final String NODES_RESPONSE_SCHEMA_JSON = "nodes-response-schema.json";
+    private static final UriModifyingOperationPreprocessor STANDARD_URI = modifyUris().host("reg.weimarnetz.de").removePort().scheme("http");
     @Rule
     public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
 
@@ -78,6 +82,7 @@ public class RestMvcTest {
         this.spec = new RequestSpecBuilder().addFilter(
                 documentationConfiguration(this.restDocumentation))
                 .build();
+        modifyUris().host("reg.weimarnetz.de").removePort().scheme("http");
         if (registratorRepository.count() < 2) {
             Node node1 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("12345").number(2).pass(passwordService.encryptPassword("test")).location("here").build();
             Node node2 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("23456").number(3).pass(passwordService.encryptPassword("test")).location("here").build();
@@ -96,7 +101,9 @@ public class RestMvcTest {
     public void testTimeEndpoint() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .filter(document("time", responseFields(
+                .filter(document("time",
+                        preprocessRequest(STANDARD_URI),
+                        responseFields(
                         fieldWithPath("now").description("current time").type(Long.class)
                 )))
                 .when().get("/time")
@@ -107,7 +114,7 @@ public class RestMvcTest {
     public void testQueryKnownNodeNumber() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .filter(document("queryNodes", NODE_RESPONSE_SNIPPET))
+                .filter(document("queryNodes", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
                 .when().get("/ffweimar/knoten/2")
                 .then().assertThat().statusCode(is(200)).and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON));
     }
@@ -124,7 +131,7 @@ public class RestMvcTest {
     public void testAddNewNodeNumber() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .filter(document("addNode", NODE_RESPONSE_SNIPPET))
+                .filter(document("addNode", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
                 .when().post("/ffweimar/knoten?mac=34556&pass=test")
                 .then().assertThat().statusCode(is(201))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
@@ -145,7 +152,7 @@ public class RestMvcTest {
     public void testUpdateNodeNumber() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .filter(document("updateNode", NODE_RESPONSE_SNIPPET))
+                .filter(document("updateNode", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
                 .when().put("/ffweimar/knoten/2?mac=12345&pass=test")
                 .then().assertThat().statusCode(is(200))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
@@ -156,7 +163,7 @@ public class RestMvcTest {
     public void testCreateNodeNumberWithPut() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .filter(document("addGivenNodeNumber", NODE_RESPONSE_SNIPPET))
+                .filter(document("addGivenNodeNumber", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
                 .when().put("/ffweimar/knoten/10?mac=54321&pass=test")
                 .then().assertThat().statusCode(is(201))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
@@ -185,7 +192,7 @@ public class RestMvcTest {
     public void testListAllNodeNumbers() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .filter(document("queryAllNodes", NODES_RESPONSE_SNIPPET))
+                .filter(document("queryAllNodes", preprocessRequest(STANDARD_URI), NODES_RESPONSE_SNIPPET))
                 .when().get("/ffweimar/knoten")
                 .then().assertThat().statusCode(is(200))
                 .and().body(matchesJsonSchemaInClasspath(NODES_RESPONSE_SCHEMA_JSON));
