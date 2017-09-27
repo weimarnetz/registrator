@@ -84,8 +84,8 @@ public class RestMvcTest {
                 .build();
         modifyUris().host("reg.weimarnetz.de").removePort().scheme("http");
         if (registratorRepository.count() < 2) {
-            Node node1 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("12345").number(2).pass(passwordService.encryptPassword("/ffweimar/knoten/2")).location("here").build();
-            Node node2 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("23456").number(3).pass(passwordService.encryptPassword("/ffweimar/knoten/3")).location("here").build();
+            Node node1 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("12345").number(2).pass(passwordService.encryptPassword("test")).location("/ffweimar/knoten/2").build();
+            Node node2 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("23456").number(3).pass(passwordService.encryptPassword("test")).location("/ffweimar/knoten/3").build();
             registratorRepository.save(node1);
             registratorRepository.save(node2);
         }
