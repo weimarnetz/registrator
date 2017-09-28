@@ -93,6 +93,12 @@ Adding a node returns the full node object
 
 operation::addNode[snippets='curl-request,http-request,http-response,response-body,response-fields']
 
+[[resources-addnodeviaget]]
+== Add node via GET
+Adding a node returns the full node object
+
+operation::addNodeViaGet[snippets='curl-request,http-request,http-response,response-body,response-fields']
+
 [[resources-updateode]]
 == Add node with given node number
 Adding a node returns the full node object
@@ -104,3 +110,9 @@ operation::addGivenNodeNumber[snippets='curl-request,http-request,http-response,
 Updating a node returns the full node object
 
 operation::updateNode[snippets='curl-request,http-request,http-response,response-body,response-fields']
+
+[[resources-updateodeviaget]]
+== Update node via GET
+Updating a node returns the full node object
+
+operation::updateNodeViaGet[snippets='curl-request,http-request,http-response,response-body,response-fields']

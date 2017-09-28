@@ -139,6 +139,32 @@ public class RestMvcTest {
     }
 
     @Test
+    public void testAddNewNodeNumberViaGet() {
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .filter(document("addNodeViaGet", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
+                .when().get("/POST/ffweimar/knoten?mac=34556&pass=test")
+                .then().assertThat().statusCode(is(201))
+                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
+                .and().body("result.number", is(4));
+    }
+
+    @Test
+    public void testNoMoreNodenumbers() {
+        for (int mac = 666; mac < 675; mac++) {
+            RestAssured.given(this.spec).port(port)
+                    .accept("application/json")
+                    .when().post("/testnet/knoten?mac=" + mac + "&pass=test")
+                    .then().assertThat().statusCode(is(201));
+        }
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().post("/testnet/knoten?mac=675&pass=test")
+                .then().assertThat().statusCode(is(500));
+
+    }
+
+    @Test
     public void testAddAlreadyExistingNodeNumber() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
@@ -154,6 +180,17 @@ public class RestMvcTest {
                 .accept("application/json")
                 .filter(document("updateNode", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
                 .when().put("/ffweimar/knoten/2?mac=12345&pass=test")
+                .then().assertThat().statusCode(is(200))
+                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
+                .and().body("result.last_seen", greaterThan(456L));
+    }
+
+    @Test
+    public void testUpdateNodeNumberViaGet() {
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .filter(document("updateNodeViaGet", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
+                .when().get("/PUT/ffweimar/knoten/2?mac=12345&pass=test")
                 .then().assertThat().statusCode(is(200))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
                 .and().body("result.last_seen", greaterThan(456L));
