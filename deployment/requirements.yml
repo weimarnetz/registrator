@@ -1,0 +1,2 @@
+# add your required roles: http://docs.ansible.com/ansible/latest/galaxy.html
+- src: geerlingguy.java

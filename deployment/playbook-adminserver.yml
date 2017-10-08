@@ -1,0 +1,13 @@
+---
+- name: "install adminserver"
+  hosts: all
+  become: yes
+  become_method: sudo
+
+  vars:
+    - adminserver_jar: '../adminserver/target/adminserver-0-SNAPSHOT.jar'
+
+  roles:
+    #- role: install_ansible
+    - role: geerlingguy.java
+    - role: install_adminserver

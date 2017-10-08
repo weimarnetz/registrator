@@ -1,0 +1,15 @@
+---
+- name: "deploy everything to vagrant box"
+  hosts: all
+  become: yes
+  become_method: sudo
+
+  vars:
+    - adminserver_jar: '../adminserver/target/adminserver-0-SNAPSHOT.jar'
+    - application_jar: '../application/target/application-0-SNAPSHOT.jar'
+
+  roles:
+    - role: geerlingguy.java
+    - role: install_application
+    - role: install_netdata
+    - role: install_adminserver

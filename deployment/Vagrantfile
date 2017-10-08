@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "debian/contrib-jessie64"
+
+  config.vm.define :springbootready do |vagrantbox|
+
+    vagrantbox.vm.provider "virtualbox" do |vb|
+      vb.memory = 4096
+      vb.cpus = 2
+      # greatly improves network speed. See: https://serverfault.com/questions/495914/vagrant-slow-internet-connection-in-guest
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+    end
+
+    vagrantbox.vm.network "forwarded_port", guest: 8080, host: 8080
+    vagrantbox.vm.network "forwarded_port", guest: 8090, host: 8090
+    vagrantbox.vm.network "forwarded_port", guest: 19999, host: 19999
+
+    vagrantbox.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbook-vagrant.yml"
+      ansible.verbose = "-vv"
+    end
+
+  end
+end

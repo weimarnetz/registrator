@@ -1,0 +1,11 @@
+[Unit]
+Description=Spring-Boot Admin UI
+
+[Service]
+ExecStart=/usr/bin/java -jar /opt/adminserver/adminserver.jar
+StandardOutput=journal
+User=adminserver
+Group=adminserver
+
+[Install]
+WantedBy=multi-user.target

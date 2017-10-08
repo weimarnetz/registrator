@@ -1,0 +1,23 @@
+---
+- group:
+    name: adminserver
+    state: present
+
+- user:
+    name: adminserver
+    group: adminserver
+    shell: /usr/sbin/nologin
+
+- name: ensure that there is a folder to install the admin ui in
+  file: path=/opt/adminserver state=directory
+
+- name: ensure that the initial pipeline is present
+  copy: src={{ adminserver_jar }} dest=/opt/adminserver/adminserver.jar
+
+- name: ensure that upstart configuration is present
+  template: src=adminserver.service dest=/lib/systemd/system/adminserver.service mode=755
+
+- name: restart adminserver
+  systemd: name=adminserver state=restarted enabled=true
+  async: 45
+  poll: 5

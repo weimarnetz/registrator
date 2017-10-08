@@ -1,0 +1,11 @@
+---
+  - name: fetch netdata installer
+    get_url:
+      url: https://my-netdata.io/kickstart-static64.sh
+      dest: /tmp/netdata-installer.sh
+      mode: 0777
+
+  - name: install netdata
+    shell: /tmp/netdata-installer.sh --non-interactive
+    args:
+      creates: /opt/netdata

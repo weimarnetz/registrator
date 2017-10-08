@@ -1,0 +1,11 @@
+[Unit]
+Description={{ application_name }}
+
+[Service]
+ExecStart=/usr/bin/java -jar /opt/{{ application_name }}/{{ application_name }}.jar
+StandardOutput=journal
+User={{ application_name }}
+Group={{ application_name }}
+
+[Install]
+WantedBy=multi-user.target
