@@ -24,3 +24,9 @@ spring:
     jpa:
       hibernate:
         ddl-auto: update
+    boot:
+      admin:
+        url: http://localhost:8090
+management:
+  security:
+    enabled: false

@@ -6,6 +6,7 @@ ExecStart=/usr/bin/java -jar /opt/{{ application_name }}/{{ application_name }}.
 StandardOutput=journal
 User={{ application_name }}
 Group={{ application_name }}
+WorkingDirectory=/opt/{{ application_name }}/
 
 [Install]
 WantedBy=multi-user.target
