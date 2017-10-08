@@ -1,6 +1,6 @@
 language: java
 
-script: "mvn cobertura:cobertura"
+script: "mvn -f registratorapp/pom.xml cobertura:cobertura"
 
 jdk:
  - oraclejdk8
