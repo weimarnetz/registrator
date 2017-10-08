@@ -14,4 +14,14 @@
         <module>registratorapp</module>
     </modules>
 
+    <profiles>
+        <profile>
+            <id>cd</id>
+            <modules>
+                <module>adminserver</module>
+                <module>registratorapp</module>
+                <module>deployment</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>

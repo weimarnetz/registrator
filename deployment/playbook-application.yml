@@ -6,7 +6,7 @@
 
   vars:
     - adminserver_jar: '../adminserver/target/adminserver-0-SNAPSHOT.jar'
-    - application_jar: '../registratorapp/target/registratorapp-0.0.1-SNAPSHOT.jar'
+    - application_jar: '../registratorapp/target/registratorapp-1.0-SNAPSHOT.jar'
     - application_name: 'registratorapp'
 
   #roles:

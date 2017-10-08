@@ -7,4 +7,4 @@ Start with ```mvn spring-boot:run```
 
 Use swagger ui to discover ```http://<hostname>:<port>/swagger-ui.html```
 
-Registrator to test: https://fathomless-castle-27765.herokuapp.com/
+Find generated docs: ```http://<hostname>:<port>/docs/index.html```
