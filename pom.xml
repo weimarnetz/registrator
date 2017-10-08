@@ -12,7 +12,6 @@
     <modules>
         <module>adminserver</module>
         <module>registratorapp</module>
-        <module>deployment</module>
     </modules>
 
 </project>
