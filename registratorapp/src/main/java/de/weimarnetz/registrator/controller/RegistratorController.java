@@ -1,8 +1,11 @@
 package de.weimarnetz.registrator.controller;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-
 import de.weimarnetz.registrator.exceptions.NetworkNotFoundException;
 import de.weimarnetz.registrator.exceptions.NoMoreNodesException;
 import de.weimarnetz.registrator.model.Node;
@@ -25,9 +23,14 @@ import de.weimarnetz.registrator.model.NodeResponse;
 import de.weimarnetz.registrator.model.NodesResponse;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
 import de.weimarnetz.registrator.services.LinkService;
+import de.weimarnetz.registrator.services.MacAddressService;
 import de.weimarnetz.registrator.services.NetworkVerificationService;
 import de.weimarnetz.registrator.services.NodeNumberService;
 import de.weimarnetz.registrator.services.PasswordService;
+
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
@@ -43,6 +46,8 @@ public class RegistratorController {
     private PasswordService passwordService;
     @Inject
     private LinkService linkService;
+    @Inject
+    private MacAddressService macAddressService;
 
     @GetMapping(value = {"/time",
             "/GET/time"})
@@ -74,6 +79,7 @@ public class RegistratorController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "MAC already registered!"),
             @ApiResponse(code = 201, message = "Created!"),
+            @ApiResponse(code = 400, message = "Malformed Mac"),
             @ApiResponse(code = 404, message = "Network not found"),
             @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
     })
@@ -113,18 +119,7 @@ public class RegistratorController {
             log.error("Network {} not found!", network, e);
             return ResponseEntity.notFound().build();
         }
-        Node newNode = Node.builder()
-                .number(newNodeNumber)
-                .createdAt(currentTime)
-                .lastSeen(currentTime)
-                .mac(mac)
-                .pass(passwordService.encryptPassword(pass))
-                .network(network)
-                .location(linkService.getNodeLocation(network, newNodeNumber))
-                .build();
-        registratorRepository.save(newNode);
-        NodeResponse nodeResponse = NodeResponse.builder().node(newNode).status(201).message("Node created!").build();
-        return ResponseEntity.created(linkService.getNodeLocationUri(network, newNodeNumber)).body(nodeResponse);
+        return saveNewNode(network, mac, pass, currentTime, newNodeNumber);
     }
 
     @GetMapping(value = { "/{network}/knoten", "/GET/{network}/knoten", "/{network}/list", "/GET/{network}/list" })
@@ -145,6 +140,7 @@ public class RegistratorController {
     @ApiResponses({
             @ApiResponse(code = 201, message = "Created!"),
             @ApiResponse(code = 303, message = "MAC already registered!"),
+            @ApiResponse(code = 400, message = "Malformed Mac"),
             @ApiResponse(code = 404, message = "Network not found"),
             @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
     })
@@ -161,6 +157,7 @@ public class RegistratorController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "OK!"),
             @ApiResponse(code = 201, message = "Created!"),
+            @ApiResponse(code = 400, message = "Malformed Mac"),
             @ApiResponse(code = 401, message = "Wrong pass!!"),
             @ApiResponse(code = 404, message = "Network not found"),
             @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
@@ -188,18 +185,7 @@ public class RegistratorController {
         Node nodeByMAC = registratorRepository.findByNetworkAndMac(network, mac);
         long currentTime = new Date().getTime();
         if (nodeByNumber == null && nodeByMAC == null) {
-            nodeByNumber = Node.builder()
-                    .number(nodeNumber)
-                    .mac(mac)
-                    .pass(passwordService.encryptPassword(pass))
-                    .createdAt(currentTime)
-                    .lastSeen(currentTime)
-                    .network(network)
-                    .location(linkService.getNodeLocation(network, nodeNumber))
-                    .build();
-            registratorRepository.save(nodeByNumber);
-            NodeResponse nodeResponse = NodeResponse.builder().node(nodeByNumber).status(201).message("created").build();
-            return ResponseEntity.status(HttpStatus.CREATED).body(nodeResponse);
+            return saveNewNode(network, mac, pass, currentTime, nodeNumber);
         }
         if (nodeByNumber != null && mac.equals(nodeByNumber.getMac()) && passwordService.isPasswordValid(pass, nodeByNumber.getPass())) {
             nodeByNumber.setLastSeen(currentTime);
@@ -214,6 +200,7 @@ public class RegistratorController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "OK!"),
             @ApiResponse(code = 201, message = "Created!"),
+            @ApiResponse(code = 400, message = "Malformed Mac"),
             @ApiResponse(code = 401, message = "Wrong pass!!"),
             @ApiResponse(code = 404, message = "Network not found"),
             @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
@@ -226,5 +213,20 @@ public class RegistratorController {
             @RequestParam String pass
     ) {
         return updateNodePut(network, nodeNumber, mac, pass);
+    }
+
+    private ResponseEntity<NodeResponse> saveNewNode(String network, String normalizedMac, String pass, long currentTime, int nodeNumber) {
+        Node newNode = Node.builder()
+                .number(nodeNumber)
+                .createdAt(currentTime)
+                .lastSeen(currentTime)
+                .mac(normalizedMac)
+                .pass(passwordService.encryptPassword(pass))
+                .network(network)
+                .location(linkService.getNodeLocation(network, nodeNumber))
+                .build();
+        registratorRepository.save(newNode);
+        NodeResponse nodeResponse = NodeResponse.builder().node(newNode).status(201).message("Node created!").build();
+        return ResponseEntity.created(linkService.getNodeLocationUri(network, nodeNumber)).body(nodeResponse);
     }
 }
