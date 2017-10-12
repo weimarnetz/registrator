@@ -8,7 +8,7 @@ import de.weimarnetz.registrator.exceptions.InvalidMacAddressException;
 public class MacAddressService {
 
     public boolean isValidMacAddress(String macAddress) {
-        return macAddress.matches("^(?:[0-9a-fA-F]{2}([-:]))(?:[0-9a-fA-F]{2}\\1){4}[0-9a-fA-F]{2}$");
+        return macAddress.matches("^([a-fA-F0-9]{2})([a-f0-9A-F]{2})([a-f0-9A-F]{2})([a-f0-9A-F]{2})([a-f0-9A-F]{2})([a-f0-9A-F]{2})$|^([a-f0-9A-F]{2}):([a-f0-9A-F]{2}):([a-f0-9A-F]{2}):([a-f0-9A-F]{2}):([a-f0-9A-F]{2}):([a-f0-9A-F]{2})$|^([a-f0-9A-F]{2})-([a-f0-9A-F]{2})-([a-f0-9A-F]{2})-([a-f0-9A-F]{2})-([a-f0-9A-F]{2})-([a-f0-9A-F]{2})$|^([0-9A-Fa-f]{4})\\.([0-9A-Fa-f]{4})\\.([0-9A-Fa-f]{4})$");
     }
 
     public String normalizeMacAddress(String macAddress) throws InvalidMacAddressException {

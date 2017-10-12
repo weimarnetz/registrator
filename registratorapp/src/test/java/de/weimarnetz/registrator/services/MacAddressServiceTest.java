@@ -34,16 +34,25 @@ public class MacAddressServiceTest {
     }
 
     @Test
-    public void validateInvalidString() throws Exception {
+    public void validatePureString() throws Exception {
         // when
         boolean validMacAddress = macAddressService.isValidMacAddress("02caffeebabe");
+
+        // then
+        assertThat(validMacAddress).isTrue();
+    }
+
+    @Test
+    public void validateWrongSizeString() throws Exception {
+        // when
+        boolean validMacAddress = macAddressService.isValidMacAddress("02caffeebabee");
 
         // then
         assertThat(validMacAddress).isFalse();
     }
 
     @Test
-    public void validateInValidMacAddress() throws Exception {
+    public void validateInvalidMacAddress() throws Exception {
         // when
         boolean validMacAddress = macAddressService.isValidMacAddress("02:ka:ff:ee:ba:be");
 
