@@ -283,7 +283,7 @@ public class RestMvcTest {
     public void testCreateNodeNumberInvalidMac() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().post("/ffweimar/knoten/24?mac=caffeebabf&pass=54321")
+                .when().post("/ffweimar/knoten?mac=caffeebabf&pass=54321")
                 .then().assertThat().statusCode(is(400));
     }
 
