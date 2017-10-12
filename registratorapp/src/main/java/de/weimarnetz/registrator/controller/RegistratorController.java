@@ -1,11 +1,8 @@
 package de.weimarnetz.registrator.controller;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-
-import javax.inject.Inject;
-
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.weimarnetz.registrator.exceptions.NetworkNotFoundException;
+import javax.inject.Inject;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+
 import de.weimarnetz.registrator.exceptions.NoMoreNodesException;
 import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.model.NodeResponse;
@@ -27,10 +28,6 @@ import de.weimarnetz.registrator.services.MacAddressService;
 import de.weimarnetz.registrator.services.NetworkVerificationService;
 import de.weimarnetz.registrator.services.NodeNumberService;
 import de.weimarnetz.registrator.services.PasswordService;
-
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
@@ -66,6 +63,7 @@ public class RegistratorController {
             @PathVariable int nodeNumber) {
 
         if (!networkVerificationService.isNetworkValid(network)) {
+            log.error("Network {} not found!", network);
             return ResponseEntity.notFound().build();
         }
         Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
@@ -89,7 +87,11 @@ public class RegistratorController {
             @RequestParam String mac,
             @RequestParam String pass
     ) {
+        if (!macAddressService.isValidMacAddress(mac)) {
+            return ResponseEntity.badRequest().build();
+        }
         if (!networkVerificationService.isNetworkValid(network)) {
+            log.error("Network {} not found!", network);
             return ResponseEntity.notFound().build();
         }
         Node node = registratorRepository.findByNetworkAndMac(network, mac);
@@ -115,11 +117,8 @@ public class RegistratorController {
         } catch (NoMoreNodesException e) {
             log.error("No more node numbers available", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        } catch (NetworkNotFoundException e) {
-            log.error("Network {} not found!", network, e);
-            return ResponseEntity.notFound().build();
         }
-        return saveNewNode(network, mac, pass, currentTime, newNodeNumber);
+        return saveNewNode(network, macAddressService.normalizeMacAddress(mac), pass, currentTime, newNodeNumber);
     }
 
     @GetMapping(value = { "/{network}/knoten", "/GET/{network}/knoten", "/{network}/list", "/GET/{network}/list" })
@@ -127,6 +126,7 @@ public class RegistratorController {
     ResponseEntity<NodesResponse> getNodes(
             @PathVariable String network) {
         if (!networkVerificationService.isNetworkValid(network)) {
+            log.error("Network {} not found!", network);
             return ResponseEntity.notFound().build();
         }
         NodesResponse nodesResponse = NodesResponse.builder()
@@ -170,22 +170,23 @@ public class RegistratorController {
             @RequestParam String mac,
             @RequestParam String pass
     ) {
+        if (!macAddressService.isValidMacAddress(mac)) {
+            return ResponseEntity.badRequest().build();
+        }
         if (!networkVerificationService.isNetworkValid(network)) {
+            log.warn("Network {} not found!", network);
             return ResponseEntity.notFound().build();
         }
-        try {
-            if (!nodeNumberService.isNodeNumberValid(nodeNumber, network)) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-        } catch (NetworkNotFoundException e) {
-            log.error("Network {} not found!", network, e);
-            return ResponseEntity.notFound().build();
+
+        if (!nodeNumberService.isNodeNumberValid(nodeNumber, network)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
         Node nodeByNumber = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
         Node nodeByMAC = registratorRepository.findByNetworkAndMac(network, mac);
         long currentTime = new Date().getTime();
         if (nodeByNumber == null && nodeByMAC == null) {
-            return saveNewNode(network, mac, pass, currentTime, nodeNumber);
+            return saveNewNode(network, macAddressService.normalizeMacAddress(mac), pass, currentTime, nodeNumber);
         }
         if (nodeByNumber != null && mac.equals(nodeByNumber.getMac()) && passwordService.isPasswordValid(pass, nodeByNumber.getPass())) {
             nodeByNumber.setLastSeen(currentTime);
