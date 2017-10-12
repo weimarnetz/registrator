@@ -84,8 +84,8 @@ public class RestMvcTest {
                 .build();
         modifyUris().host("reg.weimarnetz.de").removePort().scheme("http");
         if (registratorRepository.count() < 2) {
-            Node node1 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("12345").number(2).pass(passwordService.encryptPassword("test")).location("/ffweimar/knoten/2").build();
-            Node node2 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("23456").number(3).pass(passwordService.encryptPassword("test")).location("/ffweimar/knoten/3").build();
+            Node node1 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("02caffeebabe").number(2).pass(passwordService.encryptPassword("test")).location("/ffweimar/knoten/2").build();
+            Node node2 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("03caffeebabe").number(3).pass(passwordService.encryptPassword("test")).location("/ffweimar/knoten/3").build();
             registratorRepository.save(node1);
             registratorRepository.save(node2);
         }
@@ -132,7 +132,7 @@ public class RestMvcTest {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
                 .filter(document("addNode", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().post("/ffweimar/knoten?mac=34556&pass=test")
+                .when().post("/ffweimar/knoten?mac=04caffeebabe&pass=test")
                 .then().assertThat().statusCode(is(201))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
                 .and().body("result.number", is(4));
@@ -143,7 +143,7 @@ public class RestMvcTest {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
                 .filter(document("addNodeViaGet", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().get("/POST/ffweimar/knoten?mac=34556&pass=test")
+                .when().get("/POST/ffweimar/knoten?mac=04caffeebabe&pass=test")
                 .then().assertThat().statusCode(is(201))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
                 .and().body("result.number", is(4));
@@ -151,15 +151,15 @@ public class RestMvcTest {
 
     @Test
     public void testNoMoreNodenumbers() {
-        for (int mac = 666; mac < 675; mac++) {
+        for (int mac = 66; mac < 75; mac++) {
             RestAssured.given(this.spec).port(port)
                     .accept("application/json")
-                    .when().post("/testnet/knoten?mac=" + mac + "&pass=test")
+                    .when().post("/testnet/knoten?mac=" + mac + "caffeebabe&pass=test")
                     .then().assertThat().statusCode(is(201));
         }
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().post("/testnet/knoten?mac=675&pass=test")
+                .when().post("/testnet/knoten?mac=75caffeebabe&pass=test")
                 .then().assertThat().statusCode(is(500));
 
     }
@@ -168,7 +168,7 @@ public class RestMvcTest {
     public void testAddAlreadyExistingNodeNumber() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().post("/ffweimar/knoten?mac=23456&pass=test")
+                .when().post("/ffweimar/knoten?mac=03caffeebabe&pass=test")
                 .then().assertThat().statusCode(is(200))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
                 .and().body("result.number", is(3));
@@ -179,7 +179,7 @@ public class RestMvcTest {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
                 .filter(document("updateNode", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().put("/ffweimar/knoten/2?mac=12345&pass=test")
+                .when().put("/ffweimar/knoten/2?mac=02caffeebabe&pass=test")
                 .then().assertThat().statusCode(is(200))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
                 .and().body("result.last_seen", greaterThan(456L));
@@ -190,7 +190,7 @@ public class RestMvcTest {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
                 .filter(document("updateNodeViaGet", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().get("/PUT/ffweimar/knoten/2?mac=12345&pass=test")
+                .when().get("/PUT/ffweimar/knoten/2?mac=02caffeebabe&pass=test")
                 .then().assertThat().statusCode(is(200))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
                 .and().body("result.last_seen", greaterThan(456L));
@@ -201,7 +201,7 @@ public class RestMvcTest {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
                 .filter(document("addGivenNodeNumber", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().put("/ffweimar/knoten/10?mac=54321&pass=test")
+                .when().put("/ffweimar/knoten/10?mac=05caffeebabe&pass=test")
                 .then().assertThat().statusCode(is(201))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
                 .and().body("result.number", is(10));
@@ -211,7 +211,7 @@ public class RestMvcTest {
     public void testUpdateNodeNumberInvalidPasswordWithPost() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().post("/ffweimar/knoten?mac=12345&pass=test1")
+                .when().post("/ffweimar/knoten?mac=02caffeebabe&pass=test1")
                 .then().assertThat().statusCode(is(405))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON));
     }
@@ -220,7 +220,7 @@ public class RestMvcTest {
     public void testUpdateNodeNumberWrongPassword() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().put("/ffweimar/knoten/2?mac=12345&pass=test123")
+                .when().put("/ffweimar/knoten/2?mac=02caffeebabe&pass=test123")
                 .then().assertThat().statusCode(is(401))
                 .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON));
     }
@@ -239,7 +239,7 @@ public class RestMvcTest {
     public void testUpdateNodeNumberInvalidNetwork() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().put("/NOT_OUR_NETWORK/knoten/2?mac=12345&pass=test123")
+                .when().put("/NOT_OUR_NETWORK/knoten/2?mac=02caffeebabe&pass=test123")
                 .then().assertThat().statusCode(is(404));
     }
 
@@ -247,42 +247,58 @@ public class RestMvcTest {
     public void testUpdateNodeNumberInvalidPass() {
         String response = RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().post("/ffweimar/knoten?mac=54321&pass=54321").asString();
+                .when().post("/ffweimar/knoten?mac=05caffeebabe&pass=54321").asString();
 
        String nodenumber = from(response).get("result.number").toString();
 
        RestAssured.given(this.spec).port(port)
                .accept("application/json")
-               .when().put("/ffweimar/knoten/"+nodenumber+"?mac=54321&pass=54322")
+               .when().put("/ffweimar/knoten/" + nodenumber + "?mac=05caffeebabe&pass=54322")
                .then().assertThat().statusCode(is(401));
     }
 
     @Test
-    public void testUpdateNodeNumberInvalidMac() {
+    public void testUpdateNodeNumberWrongMac() {
         String response = RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().post("/ffweimar/knoten?mac=444&pass=54321").asString();
+                .when().post("/ffweimar/knoten?mac=07caffeebabe&pass=54321").asString();
 
         Integer nodenumber = Integer.parseInt(from(response).get("result.number").toString());
 
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().put("/ffweimar/knoten/"+nodenumber+"?mac=445&pass=54321")
+                .when().put("/ffweimar/knoten/" + nodenumber + "?mac=07caffeebabf&pass=54321")
                 .then().assertThat().statusCode(is(401));
+    }
+
+    @Test
+    public void testUpdateNodeNumberInvalidMac() {
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().put("/ffweimar/knoten/24?mac=caffeebabf&pass=54321")
+                .then().assertThat().statusCode(is(400));
+    }
+
+    @Test
+    public void testCreateNodeNumberInvalidMac() {
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().post("/ffweimar/knoten/24?mac=caffeebabf&pass=54321")
+                .then().assertThat().statusCode(is(400));
     }
 
     @Test
     public void testUpdateNodeNumberInvalidNodenumber() {
         String response = RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().post("/ffweimar/knoten?mac=8888&pass=54321").asString();
+                .when().post("/ffweimar/knoten?mac=06caffeebabe&pass=54321").asString();
 
         Integer nodenumber = Integer.parseInt(from(response).get("result.number").toString());
 
 
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().put("/ffweimar/knoten/"+nodenumber+23+"?mac=8888&pass=54321")
+                .when().put("/ffweimar/knoten/" + nodenumber + 23 + "?mac=06caffeebabe&pass=54321")
                 .then().assertThat().statusCode(is(401));
     }
 }
