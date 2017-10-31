@@ -94,7 +94,9 @@ public class RegistratorController {
             log.error("Network {} not found!", network);
             return ResponseEntity.notFound().build();
         }
-        Node node = registratorRepository.findByNetworkAndMac(network, mac);
+
+        String normalizedMac = macAddressService.normalizeMacAddress(mac);
+        Node node = registratorRepository.findByNetworkAndMac(network, normalizedMac);
         if (node != null && !passwordService.isPasswordValid(pass, node.getPass())) {
             // use PUT method instead!
             NodeResponse nodeResponse = NodeResponse.builder()
@@ -118,7 +120,7 @@ public class RegistratorController {
             log.error("No more node numbers available", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return saveNewNode(network, macAddressService.normalizeMacAddress(mac), pass, currentTime, newNodeNumber);
+        return saveNewNode(network, normalizedMac, pass, currentTime, newNodeNumber);
     }
 
     @GetMapping(value = { "/{network}/knoten", "/GET/{network}/knoten", "/{network}/list", "/GET/{network}/list" })
@@ -182,13 +184,14 @@ public class RegistratorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
+        String normalizedMac = macAddressService.normalizeMacAddress(mac);
         Node nodeByNumber = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
-        Node nodeByMAC = registratorRepository.findByNetworkAndMac(network, mac);
+        Node nodeByMAC = registratorRepository.findByNetworkAndMac(network, normalizedMac);
         long currentTime = System.currentTimeMillis();
         if (nodeByNumber == null && nodeByMAC == null) {
-            return saveNewNode(network, macAddressService.normalizeMacAddress(mac), pass, currentTime, nodeNumber);
+            return saveNewNode(network, normalizedMac, pass, currentTime, nodeNumber);
         }
-        if (nodeByNumber != null && mac.equals(nodeByNumber.getMac()) && passwordService.isPasswordValid(pass, nodeByNumber.getPass())) {
+        if (nodeByNumber != null && normalizedMac.equals(nodeByNumber.getMac()) && passwordService.isPasswordValid(pass, nodeByNumber.getPass())) {
             nodeByNumber.setLastSeen(currentTime);
             registratorRepository.save(nodeByNumber);
             NodeResponse nodeResponse = NodeResponse.builder().node(nodeByNumber).status(200).message("updated").build();
