@@ -104,7 +104,7 @@ public class RegistratorController {
                     .build();
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(nodeResponse);
         }
-        long currentTime = new Date().getTime();
+        long currentTime = System.currentTimeMillis();
         if (node != null && passwordService.isPasswordValid(pass, node.getPass())) {
             node.setLastSeen(currentTime);
             registratorRepository.save(node);
@@ -184,7 +184,7 @@ public class RegistratorController {
 
         Node nodeByNumber = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
         Node nodeByMAC = registratorRepository.findByNetworkAndMac(network, mac);
-        long currentTime = new Date().getTime();
+        long currentTime = System.currentTimeMillis();
         if (nodeByNumber == null && nodeByMAC == null) {
             return saveNewNode(network, macAddressService.normalizeMacAddress(mac), pass, currentTime, nodeNumber);
         }
