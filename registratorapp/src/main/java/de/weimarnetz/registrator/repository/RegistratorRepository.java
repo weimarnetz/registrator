@@ -13,4 +13,6 @@ public interface RegistratorRepository extends CrudRepository<Node, Long> {
     Node findByNetworkAndMac(String network, String mac);
 
     List<Node> findAllByNetwork(String network);
+
+    List<Node> findAllByNetworkOOrderByLastSeenDesc(String network);
 }

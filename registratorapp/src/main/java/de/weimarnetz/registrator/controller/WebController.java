@@ -28,7 +28,7 @@ public class WebController {
         if (!networksConfiguration.getMap().containsKey(network)) {
             throw new ResourceNotFoundException("Network " + network + " not found!");
         }
-        List<Node> allNodes = registratorRepository.findAllByNetwork(network);
+        List<Node> allNodes = registratorRepository.findAllByNetworkOOrderByLastSeenDesc(network);
         ModelAndView mav = new ModelAndView("allNodes");
         mav.addObject("nodeList", allNodes);
         mav.addObject("network", network);
