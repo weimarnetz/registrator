@@ -14,5 +14,5 @@ public interface RegistratorRepository extends CrudRepository<Node, Long> {
 
     List<Node> findAllByNetwork(String network);
 
-    List<Node> findAllByNetworkOOrderByLastSeenDesc(String network);
+    List<Node> findAllByNetworkOrderByLastSeenDesc(String network);
 }
