@@ -219,6 +219,18 @@ public class RegistratorController {
         return updateNodePut(network, nodeNumber, mac, pass);
     }
 
+    @PutMapping(value = "/{network}/updatepassword/{nodeNumber}")
+    public @ResponseBody
+    ResponseEntity<NodeResponse> updatePassword(
+            @PathVariable String network,
+            @PathVariable int nodeNumber,
+            @RequestParam String mac,
+            @RequestParam String oldPass,
+            @RequestParam String newPass
+    ) {
+        return ResponseEntity.ok(null);
+    }
+
     private ResponseEntity<NodeResponse> saveNewNode(String network, String normalizedMac, String pass, long currentTime, int nodeNumber) {
         Node newNode = Node.builder()
                 .number(nodeNumber)

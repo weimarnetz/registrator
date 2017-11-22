@@ -288,6 +288,38 @@ public class RestMvcTest {
     }
 
     @Test
+    public void testUpdatePassword() {
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().put("/ffweimar/updatepassword/2?mac=caffeebabe&oldPass=test&newPass=test123")
+                .then().assertThat().statusCode(is(200));
+    }
+
+    @Test
+    public void testUpdatePasswordWrongOldPassword() {
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().put("/ffweimar/updatepassword/2?mac=caffeebabe&oldPass=test333&newPass=test123")
+                .then().assertThat().statusCode(is(401));
+    }
+
+    @Test
+    public void testUpdatePasswordInvalidMac() {
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().put("/ffweimar/updatepassword/2?mac=caffeebabf&oldPass=test&newPass=test123")
+                .then().assertThat().statusCode(is(401));
+    }
+
+    @Test
+    public void testUpdatePasswordInvalidNodeNumber() {
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().put("/ffweimar/updatepassword/3?mac=caffeebabe&oldPass=test&newpPss=test123")
+                .then().assertThat().statusCode(is(401));
+    }
+
+    @Test
     public void testUpdateNodeNumberInvalidNodenumber() {
         String response = RestAssured.given(this.spec).port(port)
                 .accept("application/json")
