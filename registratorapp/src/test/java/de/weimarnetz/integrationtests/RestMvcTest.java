@@ -323,7 +323,7 @@ public class RestMvcTest {
     public void testUpdatePasswordInvalidNodeNumber() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().put("/ffweimar/updatepassword/3?mac=02caffeebabe&oldPass=test&newpPss=test123")
+                .when().put("/ffweimar/updatepassword/3?mac=02caffeebabe&oldPass=test&newpPass=test123")
                 .then().assertThat().statusCode(is(400));
     }
 
