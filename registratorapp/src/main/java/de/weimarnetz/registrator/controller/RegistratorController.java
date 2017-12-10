@@ -262,7 +262,7 @@ public class RegistratorController {
             @ApiResponse(code = 404, message = "Network not found"),
             @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
     })
-    @GetMapping(value = "/GET/{network}/updatepassword/{nodeNumber}")
+    @GetMapping(value = "/PUT/{network}/updatepassword/{nodeNumber}")
     public @ResponseBody
     ResponseEntity<NodeResponse> updatePasswordGet(
             @PathVariable String network,
