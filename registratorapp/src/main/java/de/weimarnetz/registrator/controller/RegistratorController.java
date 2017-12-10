@@ -219,16 +219,59 @@ public class RegistratorController {
         return updateNodePut(network, nodeNumber, mac, pass);
     }
 
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK!"),
+            @ApiResponse(code = 400, message = "Malformed Mac"),
+            @ApiResponse(code = 401, message = "Wrong pass!!"),
+            @ApiResponse(code = 404, message = "Network not found"),
+            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
+    })
     @PutMapping(value = "/{network}/updatepassword/{nodeNumber}")
     public @ResponseBody
-    ResponseEntity<NodeResponse> updatePassword(
+    ResponseEntity<NodeResponse> updatePasswordPut(
             @PathVariable String network,
             @PathVariable int nodeNumber,
             @RequestParam String mac,
             @RequestParam String oldPass,
             @RequestParam String newPass
     ) {
-        return ResponseEntity.ok(null);
+        if (!macAddressService.isValidMacAddress(mac)) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!networkVerificationService.isNetworkValid(network)) {
+            log.warn("Network {} not found!", network);
+            return ResponseEntity.notFound().build();
+        }
+        Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
+        if (node != null && macAddressService.normalizeMacAddress(mac).equals(node.getMac()) && passwordService.isPasswordValid(oldPass, node.getPass())) {
+            node.setPass(passwordService.encryptPassword(newPass));
+            registratorRepository.save(node);
+            NodeResponse nodeResponse = NodeResponse.builder().node(node).status(200).message("password changed").build();
+            return ResponseEntity.ok(nodeResponse);
+        } else if (node != null) {
+            NodeResponse nodeResponse = NodeResponse.builder().message("Unauthorized, wrong pass or mac").status(401).node(node).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(nodeResponse);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK!"),
+            @ApiResponse(code = 400, message = "Malformed Mac"),
+            @ApiResponse(code = 401, message = "Wrong pass!!"),
+            @ApiResponse(code = 404, message = "Network not found"),
+            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
+    })
+    @GetMapping(value = "/GET/{network}/updatepassword/{nodeNumber}")
+    public @ResponseBody
+    ResponseEntity<NodeResponse> updatePasswordGet(
+            @PathVariable String network,
+            @PathVariable int nodeNumber,
+            @RequestParam String mac,
+            @RequestParam String oldPass,
+            @RequestParam String newPass
+    ) {
+        return updatePasswordPut(network, nodeNumber, mac, oldPass, newPass);
     }
 
     private ResponseEntity<NodeResponse> saveNewNode(String network, String normalizedMac, String pass, long currentTime, int nodeNumber) {

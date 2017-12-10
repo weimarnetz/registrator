@@ -291,7 +291,7 @@ public class RestMvcTest {
     public void testUpdatePassword() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().put("/ffweimar/updatepassword/2?mac=caffeebabe&oldPass=test&newPass=test123")
+                .when().put("/ffweimar/updatepassword/2?mac=02caffeebabe&oldPass=test&newPass=test123")
                 .then().assertThat().statusCode(is(200));
     }
 
@@ -299,7 +299,7 @@ public class RestMvcTest {
     public void testUpdatePasswordWrongOldPassword() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().put("/ffweimar/updatepassword/2?mac=caffeebabe&oldPass=test333&newPass=test123")
+                .when().put("/ffweimar/updatepassword/2?mac=02caffeebabe&oldPass=test333&newPass=test123")
                 .then().assertThat().statusCode(is(401));
     }
 
@@ -307,7 +307,15 @@ public class RestMvcTest {
     public void testUpdatePasswordInvalidMac() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().put("/ffweimar/updatepassword/2?mac=caffeebabf&oldPass=test&newPass=test123")
+                .when().put("/ffweimar/updatepassword/2?mac=12345&oldPass=test&newPass=test123")
+                .then().assertThat().statusCode(is(400));
+    }
+
+    @Test
+    public void testUpdatePasswordWrongMac() {
+        RestAssured.given(this.spec).port(port)
+                .accept("application/json")
+                .when().put("/ffweimar/updatepassword/2?mac=02caffeebabf&oldPass=test&newPass=test123")
                 .then().assertThat().statusCode(is(401));
     }
 
@@ -315,8 +323,8 @@ public class RestMvcTest {
     public void testUpdatePasswordInvalidNodeNumber() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().put("/ffweimar/updatepassword/3?mac=caffeebabe&oldPass=test&newpPss=test123")
-                .then().assertThat().statusCode(is(401));
+                .when().put("/ffweimar/updatepassword/3?mac=02caffeebabe&oldPass=test&newpPss=test123")
+                .then().assertThat().statusCode(is(400));
     }
 
     @Test
