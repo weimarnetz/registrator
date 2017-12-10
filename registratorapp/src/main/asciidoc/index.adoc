@@ -116,3 +116,9 @@ operation::updateNode[snippets='curl-request,http-request,http-response,response
 Updating a node returns the full node object
 
 operation::updateNodeViaGet[snippets='curl-request,http-request,http-response,response-body,response-fields']
+
+[[resources-updatepassword]]
+== Update password for node
+Updating a node password returns the full node object
+
+operation::updatPassword[snippets='curl-request,http-request,http-response,response-body,response-fields']

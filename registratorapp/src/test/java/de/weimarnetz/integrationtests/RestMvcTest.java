@@ -291,8 +291,10 @@ public class RestMvcTest {
     public void testUpdatePassword() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
+                .filter(document("updatePassword", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
                 .when().put("/ffweimar/updatepassword/2?mac=02caffeebabe&oldPass=test&newPass=test123")
-                .then().assertThat().statusCode(is(200));
+                .then().assertThat().statusCode(is(200))
+                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON));
     }
 
     @Test
@@ -323,8 +325,8 @@ public class RestMvcTest {
     public void testUpdatePasswordInvalidNodeNumber() {
         RestAssured.given(this.spec).port(port)
                 .accept("application/json")
-                .when().put("/ffweimar/updatepassword/3?mac=02caffeebabe&oldPass=test&newpPass=test123")
-                .then().assertThat().statusCode(is(400));
+                .when().put("/ffweimar/updatepassword/3?mac=02caffeebabe&oldPass=test&newPass=test123")
+                .then().assertThat().statusCode(is(401));
     }
 
     @Test
