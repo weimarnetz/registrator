@@ -62,14 +62,14 @@ public class RegistratorController {
             @PathVariable String network,
             @PathVariable int nodeNumber) {
 
-        if (!networkVerificationService.isNetworkValid(network)) {
+        if (networkVerificationService.isNetworkValid(network)) {
+            Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
+            if (node != null) {
+                NodeResponse nodeResponse = NodeResponse.builder().node(node).status(HttpStatus.OK.value()).message("ok").build();
+                return ResponseEntity.ok(nodeResponse);
+            }
+        } else {
             log.error("Network {} not found!", network);
-            return ResponseEntity.notFound().build();
-        }
-        Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
-        if (node != null) {
-            NodeResponse nodeResponse = NodeResponse.builder().node(node).status(HttpStatus.OK.value()).message("ok").build();
-            return ResponseEntity.ok(nodeResponse);
         }
         return ResponseEntity.notFound().build();
     }
