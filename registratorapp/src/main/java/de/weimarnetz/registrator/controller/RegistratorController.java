@@ -99,11 +99,7 @@ public class RegistratorController {
         Node node = registratorRepository.findByNetworkAndMac(network, normalizedMac);
         if (node != null && !passwordService.isPasswordValid(pass, node.getPass())) {
             // use PUT method instead!
-            NodeResponse nodeResponse = NodeResponse.builder()
-                    .message("method not allowed")
-                    .status(HttpStatus.METHOD_NOT_ALLOWED.value())
-                    .node(node)
-                    .build();
+            NodeResponse nodeResponse = NodeResponse.builder().message("method not allowed").status(HttpStatus.METHOD_NOT_ALLOWED.value()).node(node).build();
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(nodeResponse);
         }
         long currentTime = System.currentTimeMillis();
@@ -131,11 +127,7 @@ public class RegistratorController {
             log.error("Network {} not found!", network);
             return ResponseEntity.notFound().build();
         }
-        NodesResponse nodesResponse = NodesResponse.builder()
-                .node(registratorRepository.findAllByNetwork(network))
-                .message("Ok")
-                .status(200)
-                .build();
+        NodesResponse nodesResponse = NodesResponse.builder().node(registratorRepository.findAllByNetwork(network)).message("Ok").status(200).build();
         return ResponseEntity.ok(nodesResponse);
     }
 
@@ -224,7 +216,6 @@ public class RegistratorController {
             @ApiResponse(code = 400, message = "Malformed Mac"),
             @ApiResponse(code = 401, message = "Wrong pass!!"),
             @ApiResponse(code = 404, message = "Network not found"),
-            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
     })
     @PutMapping(value = "/{network}/updatepassword/{nodeNumber}")
     public @ResponseBody
@@ -238,19 +229,19 @@ public class RegistratorController {
         if (!macAddressService.isValidMacAddress(mac)) {
             return ResponseEntity.badRequest().build();
         }
-        if (!networkVerificationService.isNetworkValid(network)) {
+        if (networkVerificationService.isNetworkValid(network)) {
+            Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
+            if (node != null && macAddressService.normalizeMacAddress(mac).equals(node.getMac()) && passwordService.isPasswordValid(oldPass, node.getPass())) {
+                node.setPass(passwordService.encryptPassword(newPass));
+                registratorRepository.save(node);
+                NodeResponse nodeResponse = NodeResponse.builder().node(node).status(200).message("password changed").build();
+                return ResponseEntity.ok(nodeResponse);
+            } else if (node != null) {
+                NodeResponse nodeResponse = NodeResponse.builder().message("Unauthorized, wrong pass or mac").status(401).node(node).build();
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(nodeResponse);
+            }
+        } else {
             log.warn("Network {} not found!", network);
-            return ResponseEntity.notFound().build();
-        }
-        Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
-        if (node != null && macAddressService.normalizeMacAddress(mac).equals(node.getMac()) && passwordService.isPasswordValid(oldPass, node.getPass())) {
-            node.setPass(passwordService.encryptPassword(newPass));
-            registratorRepository.save(node);
-            NodeResponse nodeResponse = NodeResponse.builder().node(node).status(200).message("password changed").build();
-            return ResponseEntity.ok(nodeResponse);
-        } else if (node != null) {
-            NodeResponse nodeResponse = NodeResponse.builder().message("Unauthorized, wrong pass or mac").status(401).node(node).build();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(nodeResponse);
         }
         return ResponseEntity.notFound().build();
     }
@@ -260,7 +251,6 @@ public class RegistratorController {
             @ApiResponse(code = 400, message = "Malformed Mac"),
             @ApiResponse(code = 401, message = "Wrong pass!!"),
             @ApiResponse(code = 404, message = "Network not found"),
-            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
     })
     @GetMapping(value = "/PUT/{network}/updatepassword/{nodeNumber}")
     public @ResponseBody
@@ -275,15 +265,7 @@ public class RegistratorController {
     }
 
     private ResponseEntity<NodeResponse> saveNewNode(String network, String normalizedMac, String pass, long currentTime, int nodeNumber) {
-        Node newNode = Node.builder()
-                .number(nodeNumber)
-                .createdAt(currentTime)
-                .lastSeen(currentTime)
-                .mac(normalizedMac)
-                .pass(passwordService.encryptPassword(pass))
-                .network(network)
-                .location(linkService.getNodeLocation(network, nodeNumber))
-                .build();
+        Node newNode = Node.builder().number(nodeNumber).createdAt(currentTime).lastSeen(currentTime).mac(normalizedMac).pass(passwordService.encryptPassword(pass)).network(network).location(linkService.getNodeLocation(network, nodeNumber)).build();
         registratorRepository.save(newNode);
         NodeResponse nodeResponse = NodeResponse.builder().node(newNode).status(201).message("Node created!").build();
         return ResponseEntity.created(linkService.getNodeLocationUri(network, nodeNumber)).body(nodeResponse);
