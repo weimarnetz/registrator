@@ -59,20 +59,19 @@ public class RegistratorController {
         return ResponseEntity.ok(time);
     }
 
-    @GetMapping(value= {"/{network}/knoten/{nodeNumber}",
-        "/GET/{network}/knoten/{nodeNumber}"})
+    @GetMapping(value = {"/{network}/knoten/{nodeNumber}", "/GET/{network}/knoten/{nodeNumber}"})
     public @ResponseBody ResponseEntity<NodeResponse> getSingleNode(
             @PathVariable String network,
             @PathVariable int nodeNumber) {
 
-        if (!networkVerificationService.isNetworkValid(network)) {
-            log.error(NETWORK_NOT_FOUND, network);
-            return ResponseEntity.notFound().build();
-        }
-        Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
-        if (node != null) {
-            NodeResponse nodeResponse = NodeResponse.builder().node(node).status(HttpStatus.OK.value()).message("ok").build();
-            return ResponseEntity.ok(nodeResponse);
+        if (networkVerificationService.isNetworkValid(network)) {
+            Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
+            if (node != null) {
+                NodeResponse nodeResponse = NodeResponse.builder().node(node).status(HttpStatus.OK.value()).message("ok").build();
+                return ResponseEntity.ok(nodeResponse);
+            }
+        } else {
+            log.error("Network {} not found!", network);
         }
         return ResponseEntity.notFound().build();
     }
@@ -102,11 +101,7 @@ public class RegistratorController {
         Node node = registratorRepository.findByNetworkAndMac(network, normalizedMac);
         if (node != null && !passwordService.isPasswordValid(pass, node.getPass())) {
             // use PUT method instead!
-            NodeResponse nodeResponse = NodeResponse.builder()
-                    .message("method not allowed")
-                    .status(HttpStatus.METHOD_NOT_ALLOWED.value())
-                    .node(node)
-                    .build();
+            NodeResponse nodeResponse = NodeResponse.builder().message("method not allowed").status(HttpStatus.METHOD_NOT_ALLOWED.value()).node(node).build();
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(nodeResponse);
         }
         long currentTime = System.currentTimeMillis();
@@ -128,17 +123,12 @@ public class RegistratorController {
 
     @GetMapping(value = { "/{network}/knoten", "/GET/{network}/knoten", "/{network}/list", "/GET/{network}/list" })
     public @ResponseBody
-    ResponseEntity<NodesResponse> getNodes(
-            @PathVariable String network) {
+    ResponseEntity<NodesResponse> getNodes(@PathVariable String network) {
         if (!networkVerificationService.isNetworkValid(network)) {
             log.error(NETWORK_NOT_FOUND, network);
             return ResponseEntity.notFound().build();
         }
-        NodesResponse nodesResponse = NodesResponse.builder()
-                .node(registratorRepository.findAllByNetwork(network))
-                .message("Ok")
-                .status(200)
-                .build();
+        NodesResponse nodesResponse = NodesResponse.builder().node(registratorRepository.findAllByNetwork(network)).message("Ok").status(200).build();
         return ResponseEntity.ok(nodesResponse);
     }
 
@@ -189,9 +179,8 @@ public class RegistratorController {
 
         String normalizedMac = macAddressService.normalizeMacAddress(mac);
         Node nodeByNumber = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
-        Node nodeByMAC = registratorRepository.findByNetworkAndMac(network, normalizedMac);
         long currentTime = System.currentTimeMillis();
-        if (nodeByNumber == null && nodeByMAC == null) {
+        if (nodeByNumber == null && registratorRepository.findByNetworkAndMac(network, normalizedMac) == null) {
             return saveNewNode(network, normalizedMac, pass, currentTime, nodeNumber);
         }
         if (nodeByNumber != null && normalizedMac.equals(nodeByNumber.getMac()) && passwordService.isPasswordValid(pass, nodeByNumber.getPass())) {
@@ -222,16 +211,61 @@ public class RegistratorController {
         return updateNodePut(network, nodeNumber, mac, pass);
     }
 
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK!"),
+            @ApiResponse(code = 400, message = "Malformed Mac"),
+            @ApiResponse(code = 401, message = "Wrong pass!!"),
+            @ApiResponse(code = 404, message = "Network not found"),
+    })
+    @PutMapping(value = "/{network}/updatepassword/{nodeNumber}")
+    public @ResponseBody
+    ResponseEntity<NodeResponse> updatePasswordPut(
+            @PathVariable String network,
+            @PathVariable int nodeNumber,
+            @RequestParam String mac,
+            @RequestParam String oldPass,
+            @RequestParam String newPass
+    ) {
+        if (!macAddressService.isValidMacAddress(mac)) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (networkVerificationService.isNetworkValid(network)) {
+            Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
+            if (node != null && macAddressService.normalizeMacAddress(mac).equals(node.getMac()) && passwordService.isPasswordValid(oldPass, node.getPass())) {
+                node.setPass(passwordService.encryptPassword(newPass));
+                registratorRepository.save(node);
+                NodeResponse nodeResponse = NodeResponse.builder().node(node).status(200).message("password changed").build();
+                return ResponseEntity.ok(nodeResponse);
+            } else if (node != null) {
+                NodeResponse nodeResponse = NodeResponse.builder().message("Unauthorized, wrong pass or mac").status(401).node(node).build();
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(nodeResponse);
+            }
+        } else {
+            log.warn("Network {} not found!", network);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK!"),
+            @ApiResponse(code = 400, message = "Malformed Mac"),
+            @ApiResponse(code = 401, message = "Wrong pass!!"),
+            @ApiResponse(code = 404, message = "Network not found"),
+    })
+    @GetMapping(value = "/PUT/{network}/updatepassword/{nodeNumber}")
+    public @ResponseBody
+    ResponseEntity<NodeResponse> updatePasswordGet(
+            @PathVariable String network,
+            @PathVariable int nodeNumber,
+            @RequestParam String mac,
+            @RequestParam String oldPass,
+            @RequestParam String newPass
+    ) {
+        return updatePasswordPut(network, nodeNumber, mac, oldPass, newPass);
+    }
+
     private ResponseEntity<NodeResponse> saveNewNode(String network, String normalizedMac, String pass, long currentTime, int nodeNumber) {
-        Node newNode = Node.builder()
-                .number(nodeNumber)
-                .createdAt(currentTime)
-                .lastSeen(currentTime)
-                .mac(normalizedMac)
-                .pass(passwordService.encryptPassword(pass))
-                .network(network)
-                .location(linkService.getNodeLocation(network, nodeNumber))
-                .build();
+        Node newNode = Node.builder().number(nodeNumber).createdAt(currentTime).lastSeen(currentTime).mac(normalizedMac).pass(passwordService.encryptPassword(pass)).network(network).location(linkService.getNodeLocation(network, nodeNumber)).build();
         registratorRepository.save(newNode);
         NodeResponse nodeResponse = NodeResponse.builder().node(newNode).status(201).message("Node created!").build();
         return ResponseEntity.created(linkService.getNodeLocationUri(network, nodeNumber)).body(nodeResponse);
