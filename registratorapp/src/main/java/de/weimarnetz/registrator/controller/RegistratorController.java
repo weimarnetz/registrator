@@ -1,8 +1,11 @@
 package de.weimarnetz.registrator.controller;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,11 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.inject.Inject;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
 
 import de.weimarnetz.registrator.exceptions.NoMoreNodesException;
 import de.weimarnetz.registrator.model.Node;
@@ -29,10 +27,15 @@ import de.weimarnetz.registrator.services.NetworkVerificationService;
 import de.weimarnetz.registrator.services.NodeNumberService;
 import de.weimarnetz.registrator.services.PasswordService;
 
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @Slf4j
 public class RegistratorController {
 
+    private static final String NETWORK_NOT_FOUND = "Network {} not found!";
     @Inject
     private RegistratorRepository registratorRepository;
     @Inject
@@ -91,7 +94,7 @@ public class RegistratorController {
             return ResponseEntity.badRequest().build();
         }
         if (!networkVerificationService.isNetworkValid(network)) {
-            log.error("Network {} not found!", network);
+            log.error(NETWORK_NOT_FOUND, network, mac);
             return ResponseEntity.notFound().build();
         }
 
@@ -124,7 +127,7 @@ public class RegistratorController {
     ResponseEntity<NodesResponse> getNodes(
             @PathVariable String network) {
         if (!networkVerificationService.isNetworkValid(network)) {
-            log.error("Network {} not found!", network);
+            log.error(NETWORK_NOT_FOUND, network);
             return ResponseEntity.notFound().build();
         }
         NodesResponse nodesResponse = NodesResponse.builder().node(registratorRepository.findAllByNetwork(network)).message("Ok").status(200).build();
@@ -168,7 +171,7 @@ public class RegistratorController {
             return ResponseEntity.badRequest().build();
         }
         if (!networkVerificationService.isNetworkValid(network)) {
-            log.warn("Network {} not found!", network);
+            log.warn(NETWORK_NOT_FOUND, network, mac, nodeNumber);
             return ResponseEntity.notFound().build();
         }
 
