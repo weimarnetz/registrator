@@ -59,8 +59,7 @@ public class RegistratorController {
         return ResponseEntity.ok(time);
     }
 
-    @GetMapping(value= {"/{network}/knoten/{nodeNumber}",
-        "/GET/{network}/knoten/{nodeNumber}"})
+    @GetMapping(value = {"/{network}/knoten/{nodeNumber}", "/GET/{network}/knoten/{nodeNumber}"})
     public @ResponseBody ResponseEntity<NodeResponse> getSingleNode(
             @PathVariable String network,
             @PathVariable int nodeNumber) {
@@ -124,8 +123,7 @@ public class RegistratorController {
 
     @GetMapping(value = { "/{network}/knoten", "/GET/{network}/knoten", "/{network}/list", "/GET/{network}/list" })
     public @ResponseBody
-    ResponseEntity<NodesResponse> getNodes(
-            @PathVariable String network) {
+    ResponseEntity<NodesResponse> getNodes(@PathVariable String network) {
         if (!networkVerificationService.isNetworkValid(network)) {
             log.error(NETWORK_NOT_FOUND, network);
             return ResponseEntity.notFound().build();
@@ -181,9 +179,8 @@ public class RegistratorController {
 
         String normalizedMac = macAddressService.normalizeMacAddress(mac);
         Node nodeByNumber = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
-        Node nodeByMAC = registratorRepository.findByNetworkAndMac(network, normalizedMac);
         long currentTime = System.currentTimeMillis();
-        if (nodeByNumber == null && nodeByMAC == null) {
+        if (nodeByNumber == null && registratorRepository.findByNetworkAndMac(network, normalizedMac) == null) {
             return saveNewNode(network, normalizedMac, pass, currentTime, nodeNumber);
         }
         if (nodeByNumber != null && normalizedMac.equals(nodeByNumber.getMac()) && passwordService.isPasswordValid(pass, nodeByNumber.getPass())) {
