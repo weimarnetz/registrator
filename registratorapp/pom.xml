@@ -131,7 +131,7 @@
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-codahale-metrics-publisher</artifactId>
-            <version>1.5.13</version>
+            <version>1.5.12</version>
 
             <exclusions>
                 <exclusion>
