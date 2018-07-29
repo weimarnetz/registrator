@@ -1,39 +1,35 @@
 package de.weimarnetz.integrationtests;
 
 
-import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.specification.RequestSpecification;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
+
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.operation.preprocess.UriModifyingOperationPreprocessor;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
-import org.springframework.restdocs.restassured3.operation.preprocess.UriModifyingOperationPreprocessor;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.inject.Inject;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import de.weimarnetz.registrator.RegistratorApplication;
 import de.weimarnetz.registrator.model.Node;
+import de.weimarnetz.registrator.model.NodeResponse;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
 import de.weimarnetz.registrator.services.PasswordService;
-
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static io.restassured.path.json.JsonPath.from;
-import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
-import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.restassured3.operation.preprocess.RestAssuredPreprocessors.modifyUris;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = RegistratorApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -67,22 +63,21 @@ public class RestMvcTest {
     @Rule
     public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
 
+    @LocalServerPort
+    protected int port;
+
     @Inject
     private RegistratorRepository registratorRepository;
     @Inject
     private PasswordService passwordService;
 
-    private RequestSpecification spec;
-
-    @LocalServerPort
-    private int port;
+    private WebTestClient webTestClient;
 
     @Before
     public void setUp() {
-        this.spec = new RequestSpecBuilder().addFilter(
-                documentationConfiguration(this.restDocumentation))
+        webTestClient = WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
+                .filter(documentationConfiguration(restDocumentation))
                 .build();
-        modifyUris().host("reg.weimarnetz.de").removePort().scheme("http");
         if (registratorRepository.count() < 2) {
             Node node1 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("02caffeebabe").number(2).pass(passwordService.encryptPassword("test")).location("/ffweimar/knoten/2").build();
             Node node2 = Node.builder().network("ffweimar").createdAt(123L).lastSeen(456L).mac("03caffeebabe").number(3).pass(passwordService.encryptPassword("test")).location("/ffweimar/knoten/3").build();
@@ -99,248 +94,265 @@ public class RestMvcTest {
 
     @Test
     public void testTimeEndpoint() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .filter(document("time",
-                        preprocessRequest(STANDARD_URI),
+        webTestClient.get().uri("/time").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody()
+                .jsonPath("now")
+                .isNumber()
+                .consumeWith(document("time",
                         responseFields(
-                        fieldWithPath("now").description("current time").type(Long.class)
-                )))
-                .when().get("/time")
-                .then().assertThat().statusCode(is(200)).and().body("now", any(Long.class));
+                                fieldWithPath("now").description("current time")
+                        )));
     }
 
     @Test
     public void testQueryKnownNodeNumber() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .filter(document("queryNodes", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().get("/ffweimar/knoten/2")
-                .then().assertThat().statusCode(is(200)).and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON));
+        webTestClient.get().uri("/ffweimar/knoten/2").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(NodeResponse.class)
+                .consumeWith(document("queryNodes", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET));
     }
 
     @Test
     public void testQueryUnknownNodeNumber() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().get("/ffweimar/knoten/999")
-                .then().assertThat().statusCode(is(404));
+        webTestClient.get().uri("/ffweimar/knoten/999").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 
     @Test
     public void testAddNewNodeNumber() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .filter(document("addNode", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().post("/ffweimar/knoten?mac=04caffeebabe&pass=test")
-                .then().assertThat().statusCode(is(201))
-                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
-                .and().body("result.number", is(4));
+        webTestClient.post().uri("/ffweimar/knoten?mac=04caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("result.number")
+                .isEqualTo(4)
+                .consumeWith(document("addNode", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET));
     }
 
     @Test
     public void testAddNewNodeNumberViaGet() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .filter(document("addNodeViaGet", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().get("/POST/ffweimar/knoten?mac=04caffeebabe&pass=test")
-                .then().assertThat().statusCode(is(201))
-                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
-                .and().body("result.number", is(4));
+        webTestClient.get().uri("/POST/ffweimar/knoten?mac=04caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("result.number")
+                .isEqualTo(4)
+                .consumeWith(document("addNodeViaGet", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET));
     }
 
     @Test
     public void testNoMoreNodenumbers() {
         for (int mac = 66; mac < 75; mac++) {
-            RestAssured.given(this.spec).port(port)
-                    .accept("application/json")
-                    .when().post("/testnet/knoten?mac=" + mac + "caffeebabe&pass=test")
-                    .then().assertThat().statusCode(is(201));
+            webTestClient.post().uri("/testnet/knoten?mac=" + mac + "caffeebabe&pass=test")
+                    .accept(MediaType.APPLICATION_JSON_UTF8)
+                    .exchange()
+                    .expectStatus()
+                    .isCreated();
         }
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().post("/testnet/knoten?mac=75caffeebabe&pass=test")
-                .then().assertThat().statusCode(is(500));
-
+        webTestClient.post().uri("/testnet/knoten?mac=75caffeebabe&pass=test")
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .is5xxServerError();
     }
 
     @Test
     public void testAddAlreadyExistingNodeNumber() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().post("/ffweimar/knoten?mac=03caffeebabe&pass=test")
-                .then().assertThat().statusCode(is(200))
-                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
-                .and().body("result.number", is(3));
+        webTestClient.post().uri("/ffweimar/knoten?mac=03caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("result.number")
+                .isEqualTo(3).returnResult();
     }
 
     @Test
     public void testUpdateNodeNumber() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .filter(document("updateNode", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().put("/ffweimar/knoten/2?mac=02caffeebabe&pass=test")
-                .then().assertThat().statusCode(is(200))
-                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
-                .and().body("result.last_seen", greaterThan(456L));
+        webTestClient.put().uri("/ffweimar/knoten/2?mac=02caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .consumeWith(document("updateNode", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
+                .jsonPath("result.number")
+                .isEqualTo(2)
+                .jsonPath("[?($.result.last_seen > 456)]")
+                .hasJsonPath();
     }
 
     @Test
     public void testUpdateNodeNumberViaGet() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .filter(document("updateNodeViaGet", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().get("/PUT/ffweimar/knoten/2?mac=02caffeebabe&pass=test")
-                .then().assertThat().statusCode(is(200))
-                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
-                .and().body("result.last_seen", greaterThan(456L));
+        webTestClient.get().uri("/PUT/ffweimar/knoten/2?mac=02caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .consumeWith(document("updateNodeViaGet", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
+                .jsonPath("result.number")
+                .isEqualTo(2)
+                .jsonPath("[?($.result.last_seen > 456)]")
+                .hasJsonPath();
     }
 
     @Test
     public void testCreateNodeNumberWithPut() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .filter(document("addGivenNodeNumber", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().put("/ffweimar/knoten/10?mac=05caffeebabe&pass=test")
-                .then().assertThat().statusCode(is(201))
-                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON))
-                .and().body("result.number", is(10));
+        webTestClient.put().uri("/ffweimar/knoten/10?mac=05caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .consumeWith(document("addGivenNodeNumber", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
+                .jsonPath("result.number")
+                .isEqualTo(10);
     }
 
     @Test
     public void testUpdateNodeNumberInvalidPasswordWithPost() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().post("/ffweimar/knoten?mac=02caffeebabe&pass=test1")
-                .then().assertThat().statusCode(is(405))
-                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON));
+        webTestClient.post().uri("/ffweimar/knoten?mac=02caffeebabe&pass=test1").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
+                .expectBody(NodeResponse.class);
     }
 
     @Test
     public void testUpdateNodeNumberWrongPassword() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().put("/ffweimar/knoten/2?mac=02caffeebabe&pass=test123")
-                .then().assertThat().statusCode(is(401))
-                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON));
+        webTestClient.put().uri("/ffweimar/knoten/2?mac=02caffeebabe&pass=test123").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized()
+                .expectBody(NodeResponse.class);
     }
 
     @Test
     public void testListAllNodeNumbers() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .filter(document("queryAllNodes", preprocessRequest(STANDARD_URI), NODES_RESPONSE_SNIPPET))
-                .when().get("/ffweimar/knoten")
-                .then().assertThat().statusCode(is(200))
-                .and().body(matchesJsonSchemaInClasspath(NODES_RESPONSE_SCHEMA_JSON));
+        webTestClient.get().uri("/ffweimar/knoten").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .consumeWith(document("queryAllNodes", preprocessRequest(STANDARD_URI), NODES_RESPONSE_SNIPPET));
     }
 
     @Test
     public void testUpdateNodeNumberInvalidNetwork() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().put("/NOT_OUR_NETWORK/knoten/2?mac=02caffeebabe&pass=test123")
-                .then().assertThat().statusCode(is(404));
+        webTestClient.put().uri("/NOT_OUR_NETWORK/knoten/2?mac=02caffeebabe&pass=test123").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 
     @Test
     public void testUpdateNodeNumberInvalidPass() {
-        String response = RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().post("/ffweimar/knoten?mac=05caffeebabe&pass=54321").asString();
+        int nodenumber = webTestClient.post().uri("/ffweimar/knoten?mac=05caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .returnResult(NodeResponse.class)
+                .getResponseBody().blockFirst().getNode().getNumber();
 
-       String nodenumber = from(response).get("result.number").toString();
-
-       RestAssured.given(this.spec).port(port)
-               .accept("application/json")
-               .when().put("/ffweimar/knoten/" + nodenumber + "?mac=05caffeebabe&pass=54322")
-               .then().assertThat().statusCode(is(401));
+        webTestClient.put().uri("/ffweimar/knoten/" + nodenumber + "?mac=05caffeebabe&pass=54322").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
     }
 
     @Test
     public void testUpdateNodeNumberWrongMac() {
-        String response = RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().post("/ffweimar/knoten?mac=07caffeebabe&pass=54321").asString();
+        int nodenumber = webTestClient.post().uri("/ffweimar/knoten?mac=07caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .returnResult(NodeResponse.class)
+                .getResponseBody().blockFirst().getNode().getNumber();
 
-        Integer nodenumber = Integer.parseInt(from(response).get("result.number").toString());
+        webTestClient.put().uri("/ffweimar/knoten/" + nodenumber + "?mac=07caffeebabf&pass=54322").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
 
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().put("/ffweimar/knoten/" + nodenumber + "?mac=07caffeebabf&pass=54321")
-                .then().assertThat().statusCode(is(401));
     }
 
     @Test
     public void testUpdateNodeNumberInvalidMac() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().put("/ffweimar/knoten/24?mac=caffeebabf&pass=54321")
-                .then().assertThat().statusCode(is(400));
+        webTestClient.put().uri("/ffweimar/knoten/24?mac=caffeebabf&pass=54321").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
     }
 
     @Test
     public void testCreateNodeNumberInvalidMac() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().post("/ffweimar/knoten?mac=caffeebabf&pass=54321")
-                .then().assertThat().statusCode(is(400));
+        webTestClient.post().uri("/ffweimar/knoten?mac=caffeebabf&pass=54321").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
     }
 
     @Test
     public void testUpdatePassword() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .filter(document("updatePassword", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET))
-                .when().put("/ffweimar/updatepassword/2?mac=02caffeebabe&oldPass=test&newPass=test123")
-                .then().assertThat().statusCode(is(200))
-                .and().body(matchesJsonSchemaInClasspath(NODE_RESPONSE_SCHEMA_JSON));
+        webTestClient.put().uri("/ffweimar/updatepassword/2?mac=02caffeebabe&oldPass=test&newPass=test123").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(NodeResponse.class)
+                .consumeWith(document("updatePassword", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET));
     }
 
     @Test
     public void testUpdatePasswordWrongOldPassword() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().put("/ffweimar/updatepassword/2?mac=02caffeebabe&oldPass=test333&newPass=test123")
-                .then().assertThat().statusCode(is(401));
+        webTestClient.put().uri("/ffweimar/updatepassword/2?mac=02caffeebabe&oldPass=test333&newPass=test123").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized()
+                .expectBody(NodeResponse.class);
     }
 
     @Test
     public void testUpdatePasswordInvalidMac() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().put("/ffweimar/updatepassword/2?mac=12345&oldPass=test&newPass=test123")
-                .then().assertThat().statusCode(is(400));
+        webTestClient.put().uri("/ffweimar/updatepassword/2?mac=caffeebabe&oldPass=test&newPass=test123").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
     }
 
     @Test
     public void testUpdatePasswordWrongMac() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().put("/ffweimar/updatepassword/2?mac=02caffeebabf&oldPass=test&newPass=test123")
-                .then().assertThat().statusCode(is(401));
+        webTestClient.put().uri("/ffweimar/updatepassword/2?mac=02caffeebabf&oldPass=test&newPass=test123").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
     }
 
     @Test
     public void testUpdatePasswordInvalidNodeNumber() {
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().put("/ffweimar/updatepassword/3?mac=02caffeebabe&oldPass=test&newPass=test123")
-                .then().assertThat().statusCode(is(401));
+        webTestClient.put().uri("/ffweimar/updatepassword/3?mac=02caffeebabe&oldPass=test&newPass=test123").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
     }
 
     @Test
     public void testUpdateNodeNumberInvalidNodenumber() {
-        String response = RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().post("/ffweimar/knoten?mac=06caffeebabe&pass=54321").asString();
+        int nodeNumber = webTestClient.post().uri("/ffweimar/knoten?mac=06caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .returnResult(NodeResponse.class).getResponseBody().blockFirst().getNode().getNumber();
 
-        Integer nodenumber = Integer.parseInt(from(response).get("result.number").toString());
-
-
-        RestAssured.given(this.spec).port(port)
-                .accept("application/json")
-                .when().put("/ffweimar/knoten/" + nodenumber + 23 + "?mac=06caffeebabe&pass=54321")
-                .then().assertThat().statusCode(is(401));
+        webTestClient.put().uri("/ffweimar/knoten/" + nodeNumber + 23 + "?mac=06caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
     }
 }

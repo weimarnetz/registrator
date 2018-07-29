@@ -1,14 +1,13 @@
 package de.weimarnetz.registrator.services;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public class PasswordServiceTest {
+import org.junit.Test;
+import org.mockito.InjectMocks;
+
+import de.weimarnetz.MockitoTest;
+
+public class PasswordServiceTest extends MockitoTest {
 
     @InjectMocks
     private PasswordService passwordService;

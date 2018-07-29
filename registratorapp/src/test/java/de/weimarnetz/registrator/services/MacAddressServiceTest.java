@@ -1,16 +1,14 @@
 package de.weimarnetz.registrator.services;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import de.weimarnetz.registrator.exceptions.InvalidMacAddressException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MacAddressServiceTest {
+import org.junit.Test;
+import org.mockito.InjectMocks;
+
+import de.weimarnetz.MockitoTest;
+import de.weimarnetz.registrator.exceptions.InvalidMacAddressException;
+
+public class MacAddressServiceTest extends MockitoTest {
 
     @InjectMocks
     private MacAddressService macAddressService;

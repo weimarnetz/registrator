@@ -71,7 +71,7 @@ public class RegistratorController {
                 return ResponseEntity.ok(nodeResponse);
             }
         } else {
-            log.error("Network {} not found!", network);
+            log.error(NETWORK_NOT_FOUND, network);
         }
         return ResponseEntity.notFound().build();
     }
@@ -81,6 +81,7 @@ public class RegistratorController {
             @ApiResponse(code = 201, message = "Created!"),
             @ApiResponse(code = 400, message = "Malformed Mac"),
             @ApiResponse(code = 404, message = "Network not found"),
+            @ApiResponse(code = 405, message = "Method not allowed"),
             @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
     })
     @PostMapping(value = "/{network}/knoten")
@@ -241,7 +242,7 @@ public class RegistratorController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(nodeResponse);
             }
         } else {
-            log.warn("Network {} not found!", network);
+            log.warn(NETWORK_NOT_FOUND, network);
         }
         return ResponseEntity.notFound().build();
     }

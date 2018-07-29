@@ -1,27 +1,26 @@
 package de.weimarnetz.registrator.controller;
 
-import com.google.common.collect.Maps;
-import org.assertj.core.util.Lists;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.web.servlet.ModelAndView;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
+import org.assertj.core.util.Lists;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Maps;
+
+import de.weimarnetz.MockitoTest;
 import de.weimarnetz.registrator.configuration.NetworkInformation;
 import de.weimarnetz.registrator.configuration.NetworksConfiguration;
 import de.weimarnetz.registrator.exceptions.ResourceNotFoundException;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
-public class WebControllerTest {
+public class WebControllerTest extends MockitoTest {
 
     private static final String TESTNET = "testnet";
     private static final String FFWEIMAR = "ffweimar";

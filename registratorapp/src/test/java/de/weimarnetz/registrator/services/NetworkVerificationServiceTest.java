@@ -1,23 +1,21 @@
 package de.weimarnetz.registrator.services;
 
-import org.assertj.core.util.Maps;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Map;
-
-import de.weimarnetz.registrator.configuration.NetworkInformation;
-import de.weimarnetz.registrator.configuration.NetworksConfiguration;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class NetworkVerificationServiceTest {
+import java.util.Map;
+
+import org.assertj.core.util.Maps;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+
+import de.weimarnetz.MockitoTest;
+import de.weimarnetz.registrator.configuration.NetworkInformation;
+import de.weimarnetz.registrator.configuration.NetworksConfiguration;
+
+public class NetworkVerificationServiceTest extends MockitoTest {
 
     @InjectMocks
     private NetworkVerificationService networkVerificationService;

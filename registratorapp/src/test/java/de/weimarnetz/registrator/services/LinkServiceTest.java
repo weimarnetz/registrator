@@ -1,20 +1,19 @@
 package de.weimarnetz.registrator.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.net.URI;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.net.URI;
+import de.weimarnetz.MockitoTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-@RunWith(MockitoJUnitRunner.class)
-public class LinkServiceTest {
+public class LinkServiceTest extends MockitoTest {
     @InjectMocks
     private LinkService linkService;
 
