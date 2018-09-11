@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -270,5 +271,26 @@ public class RegistratorController {
         registratorRepository.save(newNode);
         NodeResponse nodeResponse = NodeResponse.builder().node(newNode).status(201).message("Node created!").build();
         return ResponseEntity.created(linkService.getNodeLocationUri(network, nodeNumber)).body(nodeResponse);
+    }
+
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Deleted!"),
+            @ApiResponse(code = 401, message = "No Authentication!!"),
+            @ApiResponse(code = 404, message = "Network or Node not found"),
+    })
+    @DeleteMapping(value = "/{network}/knoten/{nodeNumber}")
+    public @ResponseBody
+    ResponseEntity deleteNodeNumber(
+            @PathVariable String network,
+            @PathVariable int nodeNumber
+    ) {
+        if (networkVerificationService.isNetworkValid(network)) {
+            Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
+            if (node != null) {
+                registratorRepository.delete(node);
+                return ResponseEntity.noContent().build();
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 }

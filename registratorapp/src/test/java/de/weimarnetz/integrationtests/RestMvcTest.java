@@ -7,6 +7,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
+import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
 import javax.inject.Inject;
 
@@ -22,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.operation.preprocess.UriModifyingOperationPreprocessor;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -33,6 +35,7 @@ import de.weimarnetz.registrator.services.PasswordService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = RegistratorApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("testing")
 public class RestMvcTest {
 
     private static final ResponseFieldsSnippet NODE_RESPONSE_SNIPPET = responseFields(
@@ -352,5 +355,44 @@ public class RestMvcTest {
                 .exchange()
                 .expectStatus()
                 .isUnauthorized();
+    }
+
+    @Test
+    public void testDeleteNodeNumberFromDatabase() {
+        int nodeNumber = webTestClient.post().uri("/ffweimar/knoten?mac=07caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .returnResult(NodeResponse.class).getResponseBody().blockFirst().getNode().getNumber();
+
+        webTestClient.mutate().filter(basicAuthentication("deleteuser", "deletepass")).build()
+                .delete().uri("/ffweimar/knoten/" + nodeNumber)
+                .exchange()
+                .expectStatus()
+                .isNoContent();
+    }
+
+    @Test
+    public void testDeleteNodeNumberFromDatabaseWithInvalidCredentials() {
+        int nodeNumber = webTestClient.post().uri("/ffweimar/knoten?mac=07caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .returnResult(NodeResponse.class).getResponseBody().blockFirst().getNode().getNumber();
+
+        webTestClient.mutate().filter(basicAuthentication("trolluser", "trollpass")).build()
+                .delete().uri("/ffweimar/knoten/" + nodeNumber)
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+
+    @Test
+    public void testDeleteUnknownNodeNumberFromDatabase() {
+        webTestClient.mutate().filter(basicAuthentication("deleteuser", "deletepass")).build()
+                .delete().uri("/ffweimar/knoten/512")
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 }
