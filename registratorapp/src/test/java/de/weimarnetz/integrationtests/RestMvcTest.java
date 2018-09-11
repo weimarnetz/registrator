@@ -57,8 +57,6 @@ public class RestMvcTest {
             fieldWithPath("result[0].network").description("Network name").type(String.class),
             fieldWithPath("result[0].number").description("Node numnber").type(Integer.class)
     );
-    private static final String NODE_RESPONSE_SCHEMA_JSON = "node-response-schema.json";
-    private static final String NODES_RESPONSE_SCHEMA_JSON = "nodes-response-schema.json";
     private static final UriModifyingOperationPreprocessor STANDARD_URI = modifyUris().host("reg.weimarnetz.de").removePort().scheme("http");
     @Rule
     public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
