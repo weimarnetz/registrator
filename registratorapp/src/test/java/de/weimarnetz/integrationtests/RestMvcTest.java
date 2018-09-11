@@ -369,7 +369,9 @@ public class RestMvcTest {
                 .delete().uri("/ffweimar/knoten/" + nodeNumber)
                 .exchange()
                 .expectStatus()
-                .isNoContent();
+                .isNoContent()
+                .expectBody()
+                .consumeWith(document("deleteNode", preprocessRequest(STANDARD_URI)));
     }
 
     @Test
