@@ -1,11 +1,8 @@
 package de.weimarnetz.registrator.controller;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-
-import javax.inject.Inject;
-
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.inject.Inject;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+
 import de.weimarnetz.registrator.exceptions.NoMoreNodesException;
 import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.model.NodeResponse;
@@ -27,10 +29,6 @@ import de.weimarnetz.registrator.services.MacAddressService;
 import de.weimarnetz.registrator.services.NetworkVerificationService;
 import de.weimarnetz.registrator.services.NodeNumberService;
 import de.weimarnetz.registrator.services.PasswordService;
-
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
@@ -251,19 +249,28 @@ public class RegistratorController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "OK!"),
             @ApiResponse(code = 400, message = "Malformed Mac"),
-            @ApiResponse(code = 401, message = "Wrong pass!!"),
-            @ApiResponse(code = 404, message = "Network not found"),
+            @ApiResponse(code = 404, message = "Network or node not found"),
     })
-    @GetMapping(value = "/PUT/{network}/updatepassword/{nodeNumber}")
+    @GetMapping(value = "/{network}/knotenByMac")
     public @ResponseBody
-    ResponseEntity<NodeResponse> updatePasswordGet(
+    ResponseEntity<NodeResponse> getNodeByMac(
             @PathVariable String network,
-            @PathVariable int nodeNumber,
-            @RequestParam String mac,
-            @RequestParam String oldPass,
-            @RequestParam String newPass
+            @RequestParam String mac
     ) {
-        return updatePasswordPut(network, nodeNumber, mac, oldPass, newPass);
+        if (!macAddressService.isValidMacAddress(mac)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if (networkVerificationService.isNetworkValid(network)) {
+            Node node = registratorRepository.findByNetworkAndMac(network, mac);
+            if (node != null) {
+                NodeResponse nodeResponse = NodeResponse.builder().node(node).status(HttpStatus.OK.value()).message("ok").build();
+                return ResponseEntity.ok(nodeResponse);
+            }
+        } else {
+            log.error(NETWORK_NOT_FOUND, network);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     private ResponseEntity<NodeResponse> saveNewNode(String network, String normalizedMac, String pass, long currentTime, int nodeNumber) {

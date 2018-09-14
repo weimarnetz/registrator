@@ -1,16 +1,6 @@
 package de.weimarnetz.integrationtests;
 
 
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
-import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
-import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
-
-import javax.inject.Inject;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,11 +17,21 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import javax.inject.Inject;
+
 import de.weimarnetz.registrator.RegistratorApplication;
 import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.model.NodeResponse;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
 import de.weimarnetz.registrator.services.PasswordService;
+
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
+import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = RegistratorApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -116,6 +116,16 @@ public class RestMvcTest {
                 .isOk()
                 .expectBody(NodeResponse.class)
                 .consumeWith(document("queryNodes", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET));
+    }
+
+    @Test
+    public void testQueryNodenumberByMac() {
+        webTestClient.get().uri("/ffweimar/knotenByMac?mac=02caffeebabe").accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(NodeResponse.class)
+                .consumeWith(document("queryNodeByMac", preprocessRequest(STANDARD_URI), NODE_RESPONSE_SNIPPET));
     }
 
     @Test

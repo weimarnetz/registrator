@@ -87,6 +87,12 @@ The Nodes resource is used to get a list of Nodes.
 
 operation::queryAllNodes[snippets='curl-request,http-request,http-response,response-body,response-fields']
 
+[[resources-querynodeByMac]]
+== Node by mac address
+This resource is used to get a Node identified by a mac address.
+
+operation::queryNodeByMac[snippets='curl-request,http-request,http-response,response-body,response-fields']
+
 [[resources-addnode]]
 == Add node
 Adding a node returns the full node object
@@ -121,7 +127,7 @@ operation::updateNodeViaGet[snippets='curl-request,http-request,http-response,re
 == Update password for node
 Updating a node password returns the full node object
 
-operation::updatePassword[snippets='curl-request,http-request,http-response,response-body,response-fields']
+operation::updatePasswor    d[snippets='curl-request,http-request,http-response,response-body,response-fields']
 
 [[resources-deletenode]]
 == Delete a node
