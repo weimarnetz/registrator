@@ -120,7 +120,7 @@ public class RestMvcTest {
 
     @Test
     public void testQueryNodenumberByMac() {
-        webTestClient.get().uri("/ffweimar/knotenByMac?mac=02caffeebabe").accept(MediaType.APPLICATION_JSON_UTF8)
+        webTestClient.get().uri("/ffweimar/knotenByMac?mac=02:ca:ff:ee:ba:be").accept(MediaType.APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus()
                 .isOk()

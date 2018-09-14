@@ -262,7 +262,7 @@ public class RegistratorController {
         }
 
         if (networkVerificationService.isNetworkValid(network)) {
-            Node node = registratorRepository.findByNetworkAndMac(network, mac);
+            Node node = registratorRepository.findByNetworkAndMac(network, macAddressService.normalizeMacAddress(mac));
             if (node != null) {
                 NodeResponse nodeResponse = NodeResponse.builder().node(node).status(HttpStatus.OK.value()).message("ok").build();
                 return ResponseEntity.ok(nodeResponse);
