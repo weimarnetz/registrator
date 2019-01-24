@@ -1,9 +1,6 @@
 Deployment
 ====
 
-## prerequisits
-	$ ansible-galaxy install -r requirements.yml
-
 ## Run Ansible Playbook against Vagrant box
 
     ansible-playbook -i inventories/vagrant playbook.yml

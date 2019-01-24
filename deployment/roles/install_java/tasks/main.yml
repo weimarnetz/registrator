@@ -1,0 +1,22 @@
+---
+- name: Add an apt key by id from a keyserver
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: B1998361219BD9C9
+
+- name: update cache
+  apt:
+    update_cache: yes
+
+- name: add repository
+  apt_repository:
+    repo: deb http://repos.azulsystems.com/debian stable main
+    state: present
+
+- name: update cache
+  apt:
+    update_cache: yes
+
+- name: install package
+  apt:
+    name: "{{ jdk_version }}"

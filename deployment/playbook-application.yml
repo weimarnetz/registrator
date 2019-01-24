@@ -8,6 +8,7 @@
     - adminserver_jar: '../adminserver/target/adminserver-0-SNAPSHOT.jar'
     - application_jar: '../registratorapp/target/registratorapp-1.0-SNAPSHOT.jar'
     - application_name: 'registratorapp'
+    - jdk_version: 'zulu-11'
 
   #roles:
     #- role: check_preconditions
@@ -17,8 +18,6 @@
 
   roles:
     #- role: install_ansible
-    - role: geerlingguy.java
-      java_packages:
-        - openjdk-8-jdk
+    - role: install_java
     #- role: install_netdata
     - role: install_application
