@@ -12,8 +12,10 @@ public class PasswordService {
         return BCrypt.hashpw(password, BCrypt.gensalt(LOG_ROUNDS));
     }
 
+    @Deprecated
     public boolean isPasswordValid(String password, String hashedPassword) {
-        return BCrypt.checkpw(password, hashedPassword);
+        // we do not want to use the password feature anymore, so let's return true
+        return true;
     }
 
 

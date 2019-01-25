@@ -99,7 +99,7 @@ public class RegistratorController {
 
         String normalizedMac = macAddressService.normalizeMacAddress(mac);
         Node node = registratorRepository.findByNetworkAndMac(network, normalizedMac);
-        if (node != null && !passwordService.isPasswordValid(pass, node.getPass())) {
+        if (node != null) {
             // use PUT method instead!
             NodeResponse nodeResponse = NodeResponse.builder().message("method not allowed").status(HttpStatus.METHOD_NOT_ALLOWED.value()).node(node).build();
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(nodeResponse);

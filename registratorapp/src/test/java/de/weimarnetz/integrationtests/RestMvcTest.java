@@ -228,7 +228,7 @@ public class RestMvcTest {
     }
 
     @Test
-    public void testUpdateNodeNumberInvalidPasswordWithPost() {
+    public void testUpdateNodeNumberWithPost() {
         webTestClient.post().uri("/ffweimar/knoten?mac=02caffeebabe&pass=test1").accept(MediaType.APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus()
@@ -241,7 +241,7 @@ public class RestMvcTest {
         webTestClient.put().uri("/ffweimar/knoten/2?mac=02caffeebabe&pass=test123").accept(MediaType.APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus()
-                .isUnauthorized()
+                .isOk()
                 .expectBody(NodeResponse.class);
     }
 
@@ -275,7 +275,7 @@ public class RestMvcTest {
         webTestClient.put().uri("/ffweimar/knoten/" + nodenumber + "?mac=05caffeebabe&pass=54322").accept(MediaType.APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus()
-                .isUnauthorized();
+                .isOk();
     }
 
     @Test
@@ -325,7 +325,7 @@ public class RestMvcTest {
         webTestClient.put().uri("/ffweimar/updatepassword/2?mac=02caffeebabe&oldPass=test333&newPass=test123").accept(MediaType.APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus()
-                .isUnauthorized()
+                .isOk()
                 .expectBody(NodeResponse.class);
     }
 

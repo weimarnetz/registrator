@@ -1,11 +1,11 @@
 package de.weimarnetz.registrator.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 import org.mockito.InjectMocks;
 
 import de.weimarnetz.MockitoTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PasswordServiceTest extends MockitoTest {
 
@@ -42,7 +42,7 @@ public class PasswordServiceTest extends MockitoTest {
         boolean passwordValid = passwordService.isPasswordValid("test123", encryptPassword);
 
         // then
-        assertThat(passwordValid).isFalse();
+        assertThat(passwordValid).isTrue();
     }
 
 
