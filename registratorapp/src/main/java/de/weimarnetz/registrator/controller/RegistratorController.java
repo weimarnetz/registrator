@@ -1,8 +1,11 @@
 package de.weimarnetz.registrator.controller;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,11 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-
 import de.weimarnetz.registrator.exceptions.NoMoreNodesException;
 import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.model.NodeResponse;
@@ -29,6 +27,10 @@ import de.weimarnetz.registrator.services.MacAddressService;
 import de.weimarnetz.registrator.services.NetworkVerificationService;
 import de.weimarnetz.registrator.services.NodeNumberService;
 import de.weimarnetz.registrator.services.PasswordService;
+
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
@@ -76,11 +78,10 @@ public class RegistratorController {
     }
 
     @ApiResponses({
-            @ApiResponse(code = 200, message = "MAC already registered!"),
             @ApiResponse(code = 201, message = "Created!"),
+            @ApiResponse(code = 303, message = "MAC already registered!"),
             @ApiResponse(code = 400, message = "Malformed Mac"),
             @ApiResponse(code = 404, message = "Network not found"),
-            @ApiResponse(code = 405, message = "Method not allowed"),
             @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
     })
     @PostMapping(value = "/{network}/knoten")
@@ -99,17 +100,12 @@ public class RegistratorController {
 
         String normalizedMac = macAddressService.normalizeMacAddress(mac);
         Node node = registratorRepository.findByNetworkAndMac(network, normalizedMac);
-        if (node != null) {
-            // use PUT method instead!
-            NodeResponse nodeResponse = NodeResponse.builder().message("method not allowed").status(HttpStatus.METHOD_NOT_ALLOWED.value()).node(node).build();
-            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(nodeResponse);
-        }
         long currentTime = System.currentTimeMillis();
-        if (node != null && passwordService.isPasswordValid(pass, node.getPass())) {
+        if (node != null) {
             node.setLastSeen(currentTime);
             registratorRepository.save(node);
             NodeResponse nodeResponse = NodeResponse.builder().status(303).message("MAC already registered").node(node).build();
-            return ResponseEntity.ok(nodeResponse);
+            return ResponseEntity.status(HttpStatus.SEE_OTHER).body(nodeResponse);
         }
         int newNodeNumber;
         try {
@@ -183,7 +179,7 @@ public class RegistratorController {
         if (nodeByNumber == null && registratorRepository.findByNetworkAndMac(network, normalizedMac) == null) {
             return saveNewNode(network, normalizedMac, pass, currentTime, nodeNumber);
         }
-        if (nodeByNumber != null && normalizedMac.equals(nodeByNumber.getMac()) && passwordService.isPasswordValid(pass, nodeByNumber.getPass())) {
+        if (nodeByNumber != null && normalizedMac.equals(nodeByNumber.getMac())) {
             nodeByNumber.setLastSeen(currentTime);
             registratorRepository.save(nodeByNumber);
             NodeResponse nodeResponse = NodeResponse.builder().node(nodeByNumber).status(200).message("updated").build();
@@ -231,7 +227,7 @@ public class RegistratorController {
         }
         if (networkVerificationService.isNetworkValid(network)) {
             Node node = registratorRepository.findByNumberAndNetwork(nodeNumber, network);
-            if (node != null && macAddressService.normalizeMacAddress(mac).equals(node.getMac()) && passwordService.isPasswordValid(oldPass, node.getPass())) {
+            if (node != null && macAddressService.normalizeMacAddress(mac).equals(node.getMac())) {
                 node.setPass(passwordService.encryptPassword(newPass));
                 registratorRepository.save(node);
                 NodeResponse nodeResponse = NodeResponse.builder().node(node).status(200).message("password changed").build();
