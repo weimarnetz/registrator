@@ -30,6 +30,6 @@
   template: src=application.service dest=/lib/systemd/system/{{ application_name }}.service mode=755
 
 - name: "restart {{ application_name }}"
-  systemd: name={{ application_name }} state=restarted enabled=true
+  systemd: name={{ application_name }} state=restarted enabled=true daemon_reload=true
   async: 45
   poll: 5
