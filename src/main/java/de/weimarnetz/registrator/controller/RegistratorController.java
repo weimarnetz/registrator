@@ -94,7 +94,7 @@ public class RegistratorController {
             return ResponseEntity.badRequest().build();
         }
         if (!networkVerificationService.isNetworkValid(network)) {
-            log.error(NETWORK_NOT_FOUND, network, mac);
+            log.error(" {}, network: {}, mac: {}", NETWORK_NOT_FOUND, network, mac);
             return ResponseEntity.notFound().build();
         }
 
@@ -165,7 +165,7 @@ public class RegistratorController {
             return ResponseEntity.badRequest().build();
         }
         if (!networkVerificationService.isNetworkValid(network)) {
-            log.warn(NETWORK_NOT_FOUND, network, mac, nodeNumber);
+            log.warn("{}, network: {}, mac: {}, node: {}", NETWORK_NOT_FOUND, network, mac, nodeNumber);
             return ResponseEntity.notFound().build();
         }
 
@@ -283,7 +283,7 @@ public class RegistratorController {
     })
     @DeleteMapping(value = "/{network}/knoten/{nodeNumber}")
     public @ResponseBody
-    ResponseEntity deleteNodeNumber(
+    ResponseEntity<Object> deleteNodeNumber(
             @PathVariable String network,
             @PathVariable int nodeNumber
     ) {
