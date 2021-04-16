@@ -30,7 +30,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Weimarnetz Registrator")
-                .version("2.0.0")
+                .version("2.0.1")
                 .description("Tool to register and manage registered nodes")
                 .contact(new Contact(
                         "Weimarnetz e.V.",
