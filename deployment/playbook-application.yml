@@ -5,8 +5,7 @@
   become_method: sudo
 
   vars:
-    - adminserver_jar: '../adminserver/target/adminserver-0-SNAPSHOT.jar'
-    - application_jar: '../registratorapp/target/registratorapp-1.0-SNAPSHOT.jar'
+    - application_jar: '../target/registratorapp-1.0-SNAPSHOT.jar'
     - application_name: 'registratorapp'
     - jdk_version: 'zulu-11'
 
