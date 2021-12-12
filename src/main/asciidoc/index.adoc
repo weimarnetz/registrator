@@ -133,4 +133,4 @@ operation::updatePassword[snippets='curl-request,http-request,http-response,resp
 == Delete a node
 Delete a node from the database, need authentication
 
-operation::deleteNode[snippets='curl-request,http-request,http-response,response-body,response-fields']
+operation::deleteNode[snippets='curl-request,http-request,http-response,response-body']
