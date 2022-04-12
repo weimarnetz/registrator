@@ -1,0 +1,39 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${symbol_dollar}{{ runner.os }}-maven-${symbol_dollar}{{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${symbol_dollar}{{ runner.os }}-maven-
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Build and Test
+        run: ./mvnw clean verify
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: successful-build
+          retention-days: 5
+          path: |
+            target

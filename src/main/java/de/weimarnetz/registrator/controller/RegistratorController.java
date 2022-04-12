@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,40 +26,33 @@ import de.weimarnetz.registrator.services.NetworkVerificationService;
 import de.weimarnetz.registrator.services.NodeNumberService;
 import de.weimarnetz.registrator.services.PasswordService;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
+@AllArgsConstructor
 public class RegistratorController {
 
     private static final String NETWORK_NOT_FOUND = "Network {} not found!";
-    @Inject
-    private RegistratorRepository registratorRepository;
-    @Inject
-    private NodeNumberService nodeNumberService;
-    @Inject
-    private NetworkVerificationService networkVerificationService;
-    @Inject
-    private PasswordService passwordService;
-    @Inject
-    private LinkService linkService;
-    @Inject
-    private MacAddressService macAddressService;
+    private final RegistratorRepository registratorRepository;
+    private final NodeNumberService nodeNumberService;
+    private final NetworkVerificationService networkVerificationService;
+    private final PasswordService passwordService;
+    private final LinkService linkService;
+    private final MacAddressService macAddressService;
 
-    @GetMapping(value = {"/time",
-            "/GET/time"})
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "OK")
-    })
-    public @ResponseBody ResponseEntity<Map<String, Long>> getTime() {
+    @GetMapping(value = { "/time",
+            "/GET/time" })
+    public @ResponseBody
+    ResponseEntity<Map<String, Long>> getTime() {
         Map<String, Long> time = Collections.singletonMap("now", new Date().getTime());
         return ResponseEntity.ok(time);
     }
 
-    @GetMapping(value = {"/{network}/knoten/{nodeNumber}", "/GET/{network}/knoten/{nodeNumber}"})
-    public @ResponseBody ResponseEntity<NodeResponse> getSingleNode(
+    @GetMapping(value = { "/{network}/knoten/{nodeNumber}", "/GET/{network}/knoten/{nodeNumber}" })
+    public @ResponseBody
+    ResponseEntity<NodeResponse> getSingleNode(
             @PathVariable String network,
             @PathVariable int nodeNumber) {
 
@@ -77,13 +68,6 @@ public class RegistratorController {
         return ResponseEntity.notFound().build();
     }
 
-    @ApiResponses({
-            @ApiResponse(code = 201, message = "Created!"),
-            @ApiResponse(code = 303, message = "MAC already registered!"),
-            @ApiResponse(code = 400, message = "Malformed Mac"),
-            @ApiResponse(code = 404, message = "Network not found"),
-            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
-    })
     @PostMapping(value = "/{network}/knoten")
     public @ResponseBody ResponseEntity<NodeResponse> registerNodePost(
             @PathVariable String network,
@@ -128,13 +112,6 @@ public class RegistratorController {
         return ResponseEntity.ok(nodesResponse);
     }
 
-    @ApiResponses({
-            @ApiResponse(code = 201, message = "Created!"),
-            @ApiResponse(code = 303, message = "MAC already registered!"),
-            @ApiResponse(code = 400, message = "Malformed Mac"),
-            @ApiResponse(code = 404, message = "Network not found"),
-            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
-    })
     @GetMapping(value = "/POST/{network}/knoten")
     public @ResponseBody ResponseEntity<NodeResponse> registerNodeGet(
             @PathVariable String network,
@@ -145,15 +122,6 @@ public class RegistratorController {
     }
 
 
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "OK!"),
-            @ApiResponse(code = 201, message = "Created!"),
-            @ApiResponse(code = 400, message = "Malformed Mac"),
-            @ApiResponse(code = 401, message = "Wrong pass!!"),
-            @ApiResponse(code = 404, message = "Network not found"),
-            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
-
-    })
     @PutMapping(value = "/{network}/knoten/{nodeNumber}")
     public @ResponseBody ResponseEntity<NodeResponse> updateNodePut(
             @PathVariable String network,
@@ -189,14 +157,6 @@ public class RegistratorController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(nodeResponse);
     }
 
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "OK!"),
-            @ApiResponse(code = 201, message = "Created!"),
-            @ApiResponse(code = 400, message = "Malformed Mac"),
-            @ApiResponse(code = 401, message = "Wrong pass!!"),
-            @ApiResponse(code = 404, message = "Network not found"),
-            @ApiResponse(code = 500, message = "Server error, i.e. no more Nodes")
-    })
     @GetMapping(value = "/PUT/{network}/knoten/{nodeNumber}")
     public @ResponseBody ResponseEntity<NodeResponse> updateNodeGet(
             @PathVariable String network,
@@ -207,12 +167,6 @@ public class RegistratorController {
         return updateNodePut(network, nodeNumber, mac, pass);
     }
 
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "OK!"),
-            @ApiResponse(code = 400, message = "Malformed Mac"),
-            @ApiResponse(code = 401, message = "Wrong pass!!"),
-            @ApiResponse(code = 404, message = "Network not found"),
-    })
     @PutMapping(value = "/{network}/updatepassword/{nodeNumber}")
     public @ResponseBody
     ResponseEntity<NodeResponse> updatePasswordPut(
@@ -242,11 +196,6 @@ public class RegistratorController {
         return ResponseEntity.notFound().build();
     }
 
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "OK!"),
-            @ApiResponse(code = 400, message = "Malformed Mac"),
-            @ApiResponse(code = 404, message = "Network or node not found"),
-    })
     @GetMapping(value = "/{network}/knotenByMac")
     public @ResponseBody
     ResponseEntity<NodeResponse> getNodeByMac(
@@ -276,11 +225,6 @@ public class RegistratorController {
         return ResponseEntity.created(linkService.getNodeLocationUri(network, nodeNumber)).body(nodeResponse);
     }
 
-    @ApiResponses({
-            @ApiResponse(code = 204, message = "Deleted!"),
-            @ApiResponse(code = 401, message = "No Authentication!!"),
-            @ApiResponse(code = 404, message = "Network or Node not found"),
-    })
     @DeleteMapping(value = "/{network}/knoten/{nodeNumber}")
     public @ResponseBody
     ResponseEntity<Object> deleteNodeNumber(

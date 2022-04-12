@@ -18,13 +18,13 @@ import de.weimarnetz.registrator.RegistratorApplication;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = RegistratorApplication.class)
-public class RegistratorControllerIT {
+class RegistratorControllerIT {
 
     @Inject
     private RegistratorController registratorController;
 
     @Test
-    public void getTime() {
+    void getTime() {
         // when
         ResponseEntity<Map<String, Long>> time = registratorController.getTime();
 

@@ -1,12 +1,12 @@
 package de.weimarnetz.registrator.controller;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -38,9 +38,9 @@ class WebControllerTest extends MockitoTest {
     }
 
     @Test
-    public void displayNodesByNetwork() {
+    void displayNodesByNetwork() {
         // given
-        when(registratorRepository.findAllByNetwork(TESTNET)).thenReturn(Lists.emptyList());
+        when(registratorRepository.findAllByNetwork(TESTNET)).thenReturn(emptyList());
         // when
         ModelAndView modelAndView = webController.displayNodesByNetwork(TESTNET);
 
@@ -50,9 +50,9 @@ class WebControllerTest extends MockitoTest {
     }
 
     @Test
-    public void displayNodes() {
+    void displayNodes() {
         // given
-        when(registratorRepository.findAllByNetwork(FFWEIMAR)).thenReturn(Lists.emptyList());
+        when(registratorRepository.findAllByNetwork(FFWEIMAR)).thenReturn(emptyList());
         // when
         ModelAndView modelAndView = webController.displayNodes();
 
@@ -63,7 +63,7 @@ class WebControllerTest extends MockitoTest {
     }
 
     @Test
-    public void networkNotFound() {
+    void networkNotFound() {
         // when
         assertThrows(ResourceNotFoundException.class, () -> webController.displayNodesByNetwork("nonexistingnetwork"));
     }
