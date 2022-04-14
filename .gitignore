@@ -22,7 +22,5 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-/.mvn/
 .DS_Store
-.mvn/
 *.retry
