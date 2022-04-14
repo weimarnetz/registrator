@@ -31,24 +31,20 @@ class NodeNumberService(
         return nodeNumber >= getNodeNumberBoundaries(network).left && nodeNumber <= getNodeNumberBoundaries(network).right
     }
 
-    @Throws(NetworkNotFoundException::class)
     private fun findFirstMissing(list: List<Int>, start: Int, end: Int, network: String?): Int {
         val minNodeNumber: Int = getNodeNumberBoundaries(network).left
-        if (list.isEmpty()) {
-            return minNodeNumber
-        }
-        if (start > end) {
-            return end + 1 + minNodeNumber
-        }
-        if (start + minNodeNumber != list[start]) {
-            return start + minNodeNumber
-        }
         val mid = (start + end) / 2
-
         // Left half has all elements from 0 to mid
-        return if (list.get(mid) == mid + minNodeNumber) {
-            findFirstMissing(list, mid + 1, end, network)
-        } else findFirstMissing(list, start, mid, network)
+        return when {
+            list.isEmpty() -> minNodeNumber
+            start > end -> end + 1 + minNodeNumber
+            start + minNodeNumber != list[start] -> start + minNodeNumber
+            list[mid] == mid + minNodeNumber -> findFirstMissing(list, mid + 1, end, network)
+
+            // Left half has all elements from 0 to mid
+            else -> findFirstMissing(list, start, mid, network)
+        }
+
     }
 
     @Throws(NetworkNotFoundException::class)

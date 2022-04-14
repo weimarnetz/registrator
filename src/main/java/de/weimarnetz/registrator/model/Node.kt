@@ -22,9 +22,4 @@ data class Node(
     val lastSeen: Long = 0,
     val location: String? = null,
     val network: String? = null,
-
-    @field:JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private val pass: String? = null
-) {
-
-}
+)

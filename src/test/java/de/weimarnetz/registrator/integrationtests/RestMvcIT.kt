@@ -3,7 +3,6 @@ package de.weimarnetz.registrator.integrationtests
 import de.weimarnetz.registrator.model.Node
 import de.weimarnetz.registrator.model.NodeResponse
 import de.weimarnetz.registrator.repository.RegistratorRepository
-import de.weimarnetz.registrator.services.PasswordService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -29,9 +28,7 @@ import java.time.Duration
 @ActiveProfiles("testing")
 class RestMvcIT(
     @Autowired
-    private val registratorRepository: RegistratorRepository,
-    @Autowired
-    private val passwordService: PasswordService
+    private val registratorRepository: RegistratorRepository
 ) {
     @LocalServerPort
     protected lateinit var port: String
@@ -51,7 +48,6 @@ class RestMvcIT(
                 lastSeen = 456L,
                 mac = "02caffeebabe",
                 number = 2,
-                pass = passwordService.encryptPassword("test"),
                 location = "/ffweimar/knoten/2"
             )
             val node2 = Node(
@@ -60,7 +56,6 @@ class RestMvcIT(
                 lastSeen = 456L,
                 mac = "03caffeebabe",
                 number = 3,
-                pass = passwordService.encryptPassword("test"),
                 location = "/ffweimar/knoten/3"
             )
             registratorRepository.saveAll(listOf(node1, node2))

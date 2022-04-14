@@ -9,7 +9,6 @@ import de.weimarnetz.registrator.services.LinkService
 import de.weimarnetz.registrator.services.MacAddressService
 import de.weimarnetz.registrator.services.NetworkVerificationService
 import de.weimarnetz.registrator.services.NodeNumberService
-import de.weimarnetz.registrator.services.PasswordService
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -28,7 +27,6 @@ class RegistratorController(
     private val registratorRepository: RegistratorRepository,
     private val nodeNumberService: NodeNumberService,
     private val networkVerificationService: NetworkVerificationService,
-    private val passwordService: PasswordService,
     private val linkService: LinkService,
     private val macAddressService: MacAddressService
 ) {
@@ -62,8 +60,7 @@ class RegistratorController(
     @ResponseBody
     fun registerNodePost(
         @PathVariable network: String,
-        @RequestParam mac: String?,
-        @RequestParam pass: String = ""
+        @RequestParam mac: String?
     ): ResponseEntity<NodeResponse?>? {
         if (!macAddressService.isValidMacAddress(mac)) {
             return ResponseEntity.badRequest().build()
@@ -87,7 +84,7 @@ class RegistratorController(
             log.error(e) { "No more node numbers available" }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }
-        return saveNewNode(network, normalizedMac, pass, currentTime, newNodeNumber)
+        return saveNewNode(network, normalizedMac, currentTime, newNodeNumber)
     }
 
     @GetMapping(value = ["/{network}/knoten", "/GET/{network}/knoten", "/{network}/list", "/GET/{network}/list"])
@@ -110,10 +107,9 @@ class RegistratorController(
     @ResponseBody
     fun registerNodeGet(
         @PathVariable network: String,
-        @RequestParam mac: String?,
-        @RequestParam pass: String = ""
+        @RequestParam mac: String?
     ): ResponseEntity<NodeResponse?>? {
-        return registerNodePost(network, mac, pass)
+        return registerNodePost(network, mac)
     }
 
     @PutMapping(value = ["/{network}/knoten/{nodeNumber}"])
@@ -121,8 +117,7 @@ class RegistratorController(
     fun updateNodePut(
         @PathVariable network: String,
         @PathVariable nodeNumber: Int,
-        @RequestParam mac: String?,
-        @RequestParam pass: String = ""
+        @RequestParam mac: String?
     ): ResponseEntity<NodeResponse?>? {
         if (!macAddressService.isValidMacAddress(mac)) {
             return ResponseEntity.badRequest().build()
@@ -138,7 +133,7 @@ class RegistratorController(
         val nodeByNumber = registratorRepository.findByNumberAndNetwork(nodeNumber, network)
         val currentTime = System.currentTimeMillis()
         if (nodeByNumber == null && registratorRepository.findByNetworkAndMac(network, normalizedMac) == null) {
-            return saveNewNode(network, normalizedMac, pass, currentTime, nodeNumber)
+            return saveNewNode(network, normalizedMac, currentTime, nodeNumber)
         }
         if (nodeByNumber != null && normalizedMac == nodeByNumber.mac) {
             val updatedNode = nodeByNumber.copy(lastSeen = currentTime)
@@ -155,10 +150,9 @@ class RegistratorController(
     fun updateNodeGet(
         @PathVariable network: String,
         @PathVariable nodeNumber: Int,
-        @RequestParam mac: String?,
-        @RequestParam pass: String = ""
+        @RequestParam mac: String?
     ): ResponseEntity<NodeResponse?>? {
-        return updateNodePut(network, nodeNumber, mac, pass)
+        return updateNodePut(network, nodeNumber, mac)
     }
 
     @GetMapping(value = ["/{network}/knotenByMac"])
@@ -185,7 +179,6 @@ class RegistratorController(
     private fun saveNewNode(
         network: String,
         normalizedMac: String?,
-        pass: String,
         currentTime: Long,
         nodeNumber: Int
     ): ResponseEntity<NodeResponse?> {
@@ -194,7 +187,6 @@ class RegistratorController(
             createdAt = currentTime,
             lastSeen = currentTime,
             mac = normalizedMac,
-            pass = passwordService.encryptPassword(pass),
             network = network,
             location = linkService.getNodeLocation(network, nodeNumber)
         )

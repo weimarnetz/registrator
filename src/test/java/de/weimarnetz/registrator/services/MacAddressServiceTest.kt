@@ -1,7 +1,8 @@
 package de.weimarnetz.registrator.services
 
 import de.weimarnetz.registrator.exceptions.InvalidMacAddressException
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -30,7 +31,7 @@ internal class MacAddressServiceTest {
         val validMacAddress = macAddressService.isValidMacAddress(mac)
 
         // then
-        Assertions.assertThat(validMacAddress).isEqualTo(expectedResult)
+        assertThat(validMacAddress).isEqualTo(expectedResult)
     }
 
     @ParameterizedTest
@@ -40,13 +41,13 @@ internal class MacAddressServiceTest {
         val normalizeMacAddress = macAddressService.normalizeMacAddress(mac)
 
         // then
-        Assertions.assertThat(normalizeMacAddress).isEqualTo("02caffeebabe")
+        assertThat(normalizeMacAddress).isEqualTo("02caffeebabe")
     }
 
     @Test
     fun normalizeInvalidMacAddress() {
         // when
-        org.junit.jupiter.api.Assertions.assertThrows(InvalidMacAddressException::class.java) {
+        assertThrows(InvalidMacAddressException::class.java) {
             macAddressService.normalizeMacAddress(
                 "02-ka-ff-ee-ba-be"
             )

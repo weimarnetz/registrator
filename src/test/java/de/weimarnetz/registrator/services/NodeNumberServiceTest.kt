@@ -119,18 +119,10 @@ class NodeNumberServiceTest {
         every { registratorRepository.findAllByNetwork("testnet") } returns getNodeList(2, 3, 4, 5, 8, 6, 7, 9, 10)
 
         // when
-        assertThrows<NetworkNotFoundException> {
-            nodeNumberService.getNextAvailableNodeNumber(
-                "not_my_network"
-            )
-        }
+        assertThrows<NetworkNotFoundException> { nodeNumberService.getNextAvailableNodeNumber("not_my_network") }
     }
 
-    private fun getNodeList(vararg nodeNumbers: Int): List<Node> {
-        return nodeNumbers.map {
-            Node(number = it)
-        }
-    }
+    private fun getNodeList(vararg nodeNumbers: Int): List<Node> = nodeNumbers.map { Node(number = it) }
 
     @Test
     fun nodeNumberToSmall() {
