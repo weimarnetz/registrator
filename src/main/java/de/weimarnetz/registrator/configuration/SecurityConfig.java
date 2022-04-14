@@ -18,9 +18,9 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     static final String ADMIN_ROLE = "ADMIN";
 
-    @Value("${delete.user}")
+    @Value("${admin.user}")
     private String username;
-    @Value("${delete.password}")
+    @Value("${admin.password}")
     private String password;
 
     @Override
@@ -28,7 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web
                 .ignoring()
                 .regexMatchers("/(css|js|fonts)/.*")
-                .antMatchers(HttpMethod.GET)
+                //.antMatchers(HttpMethod.GET)
                 .antMatchers(HttpMethod.POST)
                 .antMatchers(HttpMethod.PUT)
                 .antMatchers(HttpMethod.OPTIONS);
@@ -45,6 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable()
                 .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/dumpDatabase").hasRole(ADMIN_ROLE)
                 .antMatchers(HttpMethod.DELETE).hasRole(ADMIN_ROLE);
     }
 

@@ -1,4 +1,4 @@
-delete:
+admin:
   user: ${random.value}
   password: ${random.value}
 network:

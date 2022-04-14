@@ -1,5 +1,6 @@
 package de.weimarnetz.registrator.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
@@ -239,5 +240,17 @@ public class RegistratorController {
             }
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/dumpDatabase")
+    public @ResponseBody ResponseEntity<NodesResponse> dumpDatabase() {
+        ArrayList<Node> nodeArrayList = new ArrayList<>();
+        Iterable<Node> nodes = registratorRepository.findAll();
+        nodes.iterator().forEachRemaining(nodeArrayList::add);
+        NodesResponse.NodesResponseBuilder nodesResponse = NodesResponse.builder()
+                .message("all nodes collected")
+                .status(200)
+                .node(nodeArrayList);
+        return ResponseEntity.ok(nodesResponse.build());
     }
 }

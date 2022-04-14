@@ -1,3 +1,3 @@
-delete:
-  user: deleteuser
-  password: deletepass
+admin:
+  user: adminuser
+  password: adminpass

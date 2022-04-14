@@ -376,7 +376,7 @@ public class RestMvcIT {
                 .isCreated()
                 .returnResult(NodeResponse.class).getResponseBody().blockFirst().getNode().getNumber();
 
-        webTestClient.mutate().filter(basicAuthentication("deleteuser", "deletepass")).build()
+        webTestClient.mutate().filter(basicAuthentication("adminuser", "adminpass")).build()
                 .delete().uri("/ffweimar/knoten/" + nodeNumber)
                 .exchange()
                 .expectStatus()
@@ -402,10 +402,38 @@ public class RestMvcIT {
 
     @Test
     public void testDeleteUnknownNodeNumberFromDatabase() {
-        webTestClient.mutate().filter(basicAuthentication("deleteuser", "deletepass")).build()
+        webTestClient.mutate().filter(basicAuthentication("adminuser", "adminpass")).build()
                 .delete().uri("/ffweimar/knoten/512")
                 .exchange()
                 .expectStatus()
                 .isNotFound();
     }
+
+    @Test
+    void testDumpDatabase() {
+        int nodeNumber = webTestClient.post().uri("/ffweimar/knoten?mac=08caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .returnResult(NodeResponse.class).getResponseBody().blockFirst().getNode().getNumber();
+
+        webTestClient.mutate().filter(basicAuthentication("adminuser", "adminpass")).build()
+                .get().uri("/dumpDatabase")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .consumeWith(document("dumpDatabase", preprocessRequest(STANDARD_URI), NODES_RESPONSE_SNIPPET))
+                .jsonPath("$.result[?(@.number == " + nodeNumber + ")]").exists();
+    }
+
+    @Test
+    public void testDumpDatabaseFromDatabaseWithInvalidCredentials() {
+        webTestClient.mutate().filter(basicAuthentication("trolluser", "trollpass")).build()
+                .get().uri("/dumpDatabase")
+                .exchange()
+                .expectStatus()
+                .isUnauthorized();
+    }
+
 }
