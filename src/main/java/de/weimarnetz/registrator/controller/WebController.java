@@ -2,8 +2,6 @@ package de.weimarnetz.registrator.controller;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,13 +12,14 @@ import de.weimarnetz.registrator.exceptions.ResourceNotFoundException;
 import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
 
+import lombok.AllArgsConstructor;
+
 @Controller
+@AllArgsConstructor
 public class WebController {
 
-    @Inject
-    private RegistratorRepository registratorRepository;
-    @Inject
-    private NetworksConfiguration networksConfiguration;
+    private final RegistratorRepository registratorRepository;
+    private final NetworksConfiguration networksConfiguration;
 
     @GetMapping("/{network:[a-zA-Z0-9\\-]*$}")
     public ModelAndView displayNodesByNetwork(

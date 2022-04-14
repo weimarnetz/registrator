@@ -3,8 +3,6 @@ package de.weimarnetz.registrator.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +12,14 @@ import de.weimarnetz.registrator.exceptions.NoMoreNodesException;
 import de.weimarnetz.registrator.model.Node;
 import de.weimarnetz.registrator.repository.RegistratorRepository;
 
+import lombok.AllArgsConstructor;
+
 @Component
+@AllArgsConstructor
 public class NodeNumberService {
 
-    @Inject
-    private RegistratorRepository registratorRepository;
-    @Inject
-    private NetworksConfiguration networksConfiguration;
+    private final RegistratorRepository registratorRepository;
+    private final NetworksConfiguration networksConfiguration;
 
     public int getNextAvailableNodeNumber(String network) throws NoMoreNodesException, NetworkNotFoundException {
         Pair<Integer, Integer> nodeNumberBoundaries = getNodeNumberBoundaries(network);
