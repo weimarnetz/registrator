@@ -1,7 +1,7 @@
 Weimarnetz Registrator
 ====
 
-[![Build Status](https://travis-ci.org/andibraeu/registrator.svg?branch=master)](https://travis-ci.org/andibraeu/registrator) [![codecov](https://codecov.io/gh/andibraeu/registrator/branch/master/graph/badge.svg)](https://codecov.io/gh/andibraeu/registrator)
+[![Build Status](https://travis-ci.org/weimarnetz/registrator.svg?branch=master)](https://travis-ci.org/weimarnetz/registrator) [![codecov](https://codecov.io/gh/weimarnetz/registrator/branch/master/graph/badge.svg)](https://codecov.io/gh/weimarnetz/registrator)
 
 Prerequisites
 ----
@@ -27,4 +27,4 @@ Things that are configured already:
 
 Start with ```mvn spring-boot:run```
 
-Find generated docs: ```http://<hostname>:<port>/docs/index.html```
+Find generated docs: ```https://weimarnetz.github.io/registrator/```
