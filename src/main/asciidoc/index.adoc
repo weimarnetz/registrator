@@ -123,12 +123,6 @@ Updating a node returns the full node object
 
 operation::updateNodeViaGet[snippets='curl-request,http-request,http-response,response-body,response-fields']
 
-[[resources-updatepassword]]
-== Update password for node
-Updating a node password returns the full node object
-
-operation::updatePassword[snippets='curl-request,http-request,http-response,response-body,response-fields']
-
 [[resources-deletenode]]
 == Delete a node
 
