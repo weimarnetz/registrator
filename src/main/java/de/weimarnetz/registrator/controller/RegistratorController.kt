@@ -213,14 +213,9 @@ class RegistratorController(
 
     @GetMapping("/dumpDatabase")
     @ResponseBody
-    fun dumpDatabase(): ResponseEntity<NodesResponse> {
+    fun dumpDatabase(): ResponseEntity<List<Node>> {
         val nodes = registratorRepository.findAll().toList()
-        val nodesResponse = NodesResponse(
-            message = "all nodes collected",
-            status = 200,
-            node = nodes
-        )
-        return ResponseEntity.ok(nodesResponse)
+        return ResponseEntity.ok(nodes)
     }
 
 }

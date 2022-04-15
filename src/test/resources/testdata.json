@@ -1,24 +1,20 @@
-{
-  "message": "Ok",
-  "status": 200,
-  "result": [
-    {
-      "key": 23,
-      "number": 42,
-      "mac": "02caffeebabe",
-      "created_at": 1618579261185,
-      "last_seen": 1649942460672,
-      "location": "/test/knoten/42",
-      "network": "test"
-    },
-    {
-      "key": 42,
-      "number": 23,
-      "mac": "02c4ff33b4b3",
-      "created_at": 1620320194435,
-      "last_seen": 1620523256929,
-      "location": "/ffweimar/knoten/24",
-      "network": "ffweimar"
-    }
-  ]
-}
+[
+  {
+    "key": 23,
+    "number": 42,
+    "mac": "02caffeebabe",
+    "created_at": 1618579261185,
+    "last_seen": 1649942460672,
+    "location": "/testnet/knoten/42",
+    "network": "testnet"
+  },
+  {
+    "key": 42,
+    "number": 23,
+    "mac": "02c4ff33b4b3",
+    "created_at": 1620320194435,
+    "last_seen": 1620523256929,
+    "location": "/ffweimar/knoten/24",
+    "network": "ffweimar"
+  }
+]

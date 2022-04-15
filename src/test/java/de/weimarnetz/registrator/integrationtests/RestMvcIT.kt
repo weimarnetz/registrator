@@ -403,7 +403,7 @@ class RestMvcIT(
     @Test
     fun testDumpDatabase() {
         val nodeNumber =
-            webTestClient.post().uri("/ffweimar/knoten?mac=08caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON)
+            webTestClient.post().uri("/ffweimar/knoten?mac=08caffeebabe").accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isCreated
@@ -418,10 +418,26 @@ class RestMvcIT(
                 WebTestClientRestDocumentation.document(
                     "dumpDatabase", Preprocessors.preprocessRequest(
                         STANDARD_URI
-                    ), NODES_RESPONSE_SNIPPET
+                    ), PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("[].key").description("Internal key").type(Long::class.java),
+                        PayloadDocumentation.fieldWithPath("[].last_seen")
+                            .description("Unix timestamp of last occurence")
+                            .type(Long::class.java),
+                        PayloadDocumentation.fieldWithPath("[].created_at").description("Unix timestamp of creation")
+                            .type(Long::class.java),
+                        PayloadDocumentation.fieldWithPath("[].location").description("Path of this resource")
+                            .type(String::class.java),
+                        PayloadDocumentation.fieldWithPath("[].mac").description("Mac address of this node")
+                            .type(String::class.java),
+                        PayloadDocumentation.fieldWithPath("[].network").description("Network name")
+                            .type(String::class.java),
+                        PayloadDocumentation.fieldWithPath("[].number").description("Node numnber")
+                            .type(Int::class.java)
+
+                    )
                 )
             )
-            .jsonPath("$.result[?(@.number == $nodeNumber)]").exists()
+            .jsonPath("$[?(@.number == $nodeNumber)]").exists()
     }
 
     @Test
