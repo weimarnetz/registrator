@@ -122,7 +122,8 @@ class NodeNumberServiceTest {
         assertThrows<NetworkNotFoundException> { nodeNumberService.getNextAvailableNodeNumber("not_my_network") }
     }
 
-    private fun getNodeList(vararg nodeNumbers: Int): List<Node> = nodeNumbers.map { Node(number = it) }
+    private fun getNodeList(vararg nodeNumbers: Int): List<Node> =
+        nodeNumbers.map { Node(number = it, network = "testnet") }
 
     @Test
     fun nodeNumberToSmall() {

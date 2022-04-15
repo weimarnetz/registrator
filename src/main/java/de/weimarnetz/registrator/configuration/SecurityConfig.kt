@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.User
@@ -23,14 +22,6 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Value("\${admin.password}")
     private val password: String? = null
-    override fun configure(web: WebSecurity) {
-        web
-            .ignoring()
-            .regexMatchers("/(css|js|fonts)/.*") //.antMatchers(HttpMethod.GET)
-            .antMatchers(HttpMethod.POST)
-            .antMatchers(HttpMethod.PUT)
-            .antMatchers(HttpMethod.OPTIONS)
-    }
 
     override fun configure(http: HttpSecurity) {
         http
@@ -43,7 +34,14 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .csrf().disable()
             .authorizeRequests()
             .antMatchers(HttpMethod.GET, "/dumpDatabase").hasRole(ADMIN_ROLE)
+            .antMatchers(HttpMethod.GET).permitAll()
+            .antMatchers(HttpMethod.POST, "/importDatabase").hasRole(ADMIN_ROLE)
+            .antMatchers(HttpMethod.POST).permitAll()
+            .antMatchers(HttpMethod.PUT).permitAll()
+            .antMatchers(HttpMethod.OPTIONS).permitAll()
+            .regexMatchers("/(css|js|fonts)/.*").permitAll()
             .antMatchers(HttpMethod.DELETE).hasRole(ADMIN_ROLE)
+            .anyRequest().authenticated()
     }
 
     @Bean

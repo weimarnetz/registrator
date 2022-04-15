@@ -3,6 +3,7 @@ package de.weimarnetz.registrator.integrationtests
 import de.weimarnetz.registrator.model.Node
 import de.weimarnetz.registrator.model.NodeResponse
 import de.weimarnetz.registrator.repository.RegistratorRepository
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -10,8 +11,10 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.operation.preprocess.Preprocessors
@@ -20,6 +23,7 @@ import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
 import java.time.Duration
 
@@ -69,7 +73,7 @@ class RestMvcIT(
 
     @Test
     fun testTimeEndpoint() {
-        webTestClient.get().uri("/time").accept(MediaType.APPLICATION_JSON)
+        webTestClient.get().uri("/time").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .is2xxSuccessful
@@ -88,7 +92,7 @@ class RestMvcIT(
 
     @Test
     fun testQueryKnownNodeNumber() {
-        webTestClient.get().uri("/ffweimar/knoten/2").accept(MediaType.APPLICATION_JSON)
+        webTestClient.get().uri("/ffweimar/knoten/2").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isOk
@@ -104,7 +108,7 @@ class RestMvcIT(
 
     @Test
     fun testQueryNodenumberByMac() {
-        webTestClient.get().uri("/ffweimar/knotenByMac?mac=02:ca:ff:ee:ba:be").accept(MediaType.APPLICATION_JSON)
+        webTestClient.get().uri("/ffweimar/knotenByMac?mac=02:ca:ff:ee:ba:be").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isOk
@@ -120,7 +124,7 @@ class RestMvcIT(
 
     @Test
     fun testQueryUnknownNodeNumber() {
-        webTestClient.get().uri("/ffweimar/knoten/999").accept(MediaType.APPLICATION_JSON)
+        webTestClient.get().uri("/ffweimar/knoten/999").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isNotFound
@@ -128,7 +132,7 @@ class RestMvcIT(
 
     @Test
     fun testAddNewNodeNumber() {
-        webTestClient.post().uri("/ffweimar/knoten?mac=04caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON)
+        webTestClient.post().uri("/ffweimar/knoten?mac=04caffeebabe&pass=test").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isCreated
@@ -146,7 +150,7 @@ class RestMvcIT(
 
     @Test
     fun testAddNewNodeNumberViaGet() {
-        webTestClient.get().uri("/POST/ffweimar/knoten?mac=04caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON)
+        webTestClient.get().uri("/POST/ffweimar/knoten?mac=04caffeebabe&pass=test").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isCreated
@@ -166,13 +170,13 @@ class RestMvcIT(
     fun testNoMoreNodenumbers() {
         for (mac in 66..74) {
             webTestClient.post().uri("/testnet/knoten?mac=" + mac + "caffeebabe&pass=test")
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isCreated
         }
         webTestClient.post().uri("/testnet/knoten?mac=75caffeebabe&pass=test")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .is5xxServerError
@@ -180,7 +184,7 @@ class RestMvcIT(
 
     @Test
     fun testAddAlreadyExistingNodeNumber() {
-        webTestClient.post().uri("/ffweimar/knoten?mac=03caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON)
+        webTestClient.post().uri("/ffweimar/knoten?mac=03caffeebabe&pass=test").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isEqualTo(HttpStatus.SEE_OTHER)
@@ -191,7 +195,7 @@ class RestMvcIT(
 
     @Test
     fun testUpdateNodeNumber() {
-        webTestClient.put().uri("/ffweimar/knoten/2?mac=02caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON)
+        webTestClient.put().uri("/ffweimar/knoten/2?mac=02caffeebabe&pass=test").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isOk
@@ -211,7 +215,7 @@ class RestMvcIT(
 
     @Test
     fun testUpdateNodeNumberViaGet() {
-        webTestClient.get().uri("/PUT/ffweimar/knoten/2?mac=02caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON)
+        webTestClient.get().uri("/PUT/ffweimar/knoten/2?mac=02caffeebabe&pass=test").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isOk
@@ -231,7 +235,7 @@ class RestMvcIT(
 
     @Test
     fun testCreateNodeNumberWithPut() {
-        webTestClient.put().uri("/ffweimar/knoten/10?mac=05caffeebabe&pass=test").accept(MediaType.APPLICATION_JSON)
+        webTestClient.put().uri("/ffweimar/knoten/10?mac=05caffeebabe&pass=test").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isCreated
@@ -249,7 +253,7 @@ class RestMvcIT(
 
     @Test
     fun testUpdateNodeNumberWithPost() {
-        webTestClient.post().uri("/ffweimar/knoten?mac=02caffeebabe&pass=test1").accept(MediaType.APPLICATION_JSON)
+        webTestClient.post().uri("/ffweimar/knoten?mac=02caffeebabe&pass=test1").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isEqualTo(HttpStatus.SEE_OTHER)
@@ -258,7 +262,7 @@ class RestMvcIT(
 
     @Test
     fun testUpdateNodeNumberWrongPassword() {
-        webTestClient.put().uri("/ffweimar/knoten/2?mac=02caffeebabe&pass=test123").accept(MediaType.APPLICATION_JSON)
+        webTestClient.put().uri("/ffweimar/knoten/2?mac=02caffeebabe&pass=test123").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isOk
@@ -267,7 +271,7 @@ class RestMvcIT(
 
     @Test
     fun testListAllNodeNumbers() {
-        webTestClient.get().uri("/ffweimar/knoten").accept(MediaType.APPLICATION_JSON)
+        webTestClient.get().uri("/ffweimar/knoten").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isOk
@@ -284,7 +288,7 @@ class RestMvcIT(
     @Test
     fun testUpdateNodeNumberInvalidNetwork() {
         webTestClient.put().uri("/NOT_OUR_NETWORK/knoten/2?mac=02caffeebabe&pass=test123")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isNotFound
@@ -293,7 +297,7 @@ class RestMvcIT(
     @Test
     fun testUpdateNodeNumberInvalidPass() {
         val nodenumber =
-            webTestClient.post().uri("/ffweimar/knoten?mac=05caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON)
+            webTestClient.post().uri("/ffweimar/knoten?mac=05caffeebabe&pass=54321").accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isCreated
@@ -301,7 +305,7 @@ class RestMvcIT(
                 .responseBody.blockFirst()?.node?.number
 
         webTestClient.put().uri("/ffweimar/knoten/$nodenumber?mac=05caffeebabe&pass=54322")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isOk
@@ -310,14 +314,14 @@ class RestMvcIT(
     @Test
     fun testUpdateNodeNumberWrongMac() {
         val nodenumber =
-            webTestClient.post().uri("/ffweimar/knoten?mac=07caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON)
+            webTestClient.post().uri("/ffweimar/knoten?mac=07caffeebabe&pass=54321").accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isCreated
                 .returnResult(NodeResponse::class.java)
                 .responseBody.blockFirst()?.node?.number
         webTestClient.put().uri("/ffweimar/knoten/$nodenumber?mac=07caffeebabf&pass=54322")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isUnauthorized
@@ -325,7 +329,7 @@ class RestMvcIT(
 
     @Test
     fun testUpdateNodeNumberInvalidMac() {
-        webTestClient.put().uri("/ffweimar/knoten/24?mac=caffeebabf&pass=54321").accept(MediaType.APPLICATION_JSON)
+        webTestClient.put().uri("/ffweimar/knoten/24?mac=caffeebabf&pass=54321").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isBadRequest
@@ -333,7 +337,7 @@ class RestMvcIT(
 
     @Test
     fun testCreateNodeNumberInvalidMac() {
-        webTestClient.post().uri("/ffweimar/knoten?mac=caffeebabf&pass=54321").accept(MediaType.APPLICATION_JSON)
+        webTestClient.post().uri("/ffweimar/knoten?mac=caffeebabf&pass=54321").accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isBadRequest
@@ -342,13 +346,13 @@ class RestMvcIT(
     @Test
     fun testUpdateNodeNumberInvalidNodenumber() {
         val nodeNumber =
-            webTestClient.post().uri("/ffweimar/knoten?mac=06caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON)
+            webTestClient.post().uri("/ffweimar/knoten?mac=06caffeebabe&pass=54321").accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isCreated
                 .returnResult(NodeResponse::class.java).responseBody.blockFirst()?.node?.number
         webTestClient.put().uri("/ffweimar/knoten/" + nodeNumber + 23 + "?mac=06caffeebabe&pass=54321")
-            .accept(MediaType.APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isUnauthorized
@@ -357,7 +361,7 @@ class RestMvcIT(
     @Test
     fun testDeleteNodeNumberFromDatabase() {
         val nodeNumber =
-            webTestClient.post().uri("/ffweimar/knoten?mac=07caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON)
+            webTestClient.post().uri("/ffweimar/knoten?mac=07caffeebabe&pass=54321").accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isCreated
@@ -379,12 +383,27 @@ class RestMvcIT(
     @Test
     fun testDeleteNodeNumberFromDatabaseWithInvalidCredentials() {
         val nodeNumber =
-            webTestClient.post().uri("/ffweimar/knoten?mac=07caffeebabe&pass=54321").accept(MediaType.APPLICATION_JSON)
+            webTestClient.post().uri("/ffweimar/knoten?mac=07caffeebabe&pass=54321").accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isCreated
                 .returnResult(NodeResponse::class.java).responseBody.blockFirst()?.node?.number
         webTestClient.mutate().filter(ExchangeFilterFunctions.basicAuthentication("trolluser", "trollpass")).build()
+            .delete().uri("/ffweimar/knoten/$nodeNumber")
+            .exchange()
+            .expectStatus()
+            .isUnauthorized
+    }
+
+    @Test
+    fun testDeleteFromDatabaseWithoutCredentials() {
+        val nodeNumber =
+            webTestClient.post().uri("/ffweimar/knoten?mac=07caffeebabe&pass=54321").accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isCreated
+                .returnResult(NodeResponse::class.java).responseBody.blockFirst()?.node?.number
+        webTestClient
             .delete().uri("/ffweimar/knoten/$nodeNumber")
             .exchange()
             .expectStatus()
@@ -403,7 +422,7 @@ class RestMvcIT(
     @Test
     fun testDumpDatabase() {
         val nodeNumber =
-            webTestClient.post().uri("/ffweimar/knoten?mac=08caffeebabe").accept(MediaType.APPLICATION_JSON)
+            webTestClient.post().uri("/ffweimar/knoten?mac=08caffeebabe").accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isCreated
@@ -447,6 +466,106 @@ class RestMvcIT(
             .exchange()
             .expectStatus()
             .isUnauthorized
+    }
+
+    @Test
+    fun testDumpDatabaseFromDatabaseWithoutCredentials() {
+        webTestClient
+            .get().uri("/dumpDatabase")
+            .exchange()
+            .expectStatus()
+            .isUnauthorized
+    }
+
+    @Test
+    fun testImportDatabaseWithInvalidCredentials() {
+        webTestClient.mutate().filter(ExchangeFilterFunctions.basicAuthentication("trolluser", "trollpass")).build()
+            .post().uri("/importDatabase")
+            .exchange()
+            .expectStatus()
+            .isUnauthorized
+    }
+
+    @Test
+    fun testImportDatabaseFromDatabaseWithoutCredentials() {
+        webTestClient
+            .post().uri("/importDatabase")
+            .exchange()
+            .expectStatus()
+            .isUnauthorized
+    }
+
+    @Test
+    fun testImportDatabase() {
+        registratorRepository.save(Node(1, 22, "0202caffbabe", 0, 1, "/testnet/knoten/22", "testnet"))
+        val testdata = """
+            [
+              {
+                "key": 12,
+                "number": 22,
+                "mac": "0202caffbabe",
+                "created_at": 1618579261185,
+                "last_seen": 1649942460672,
+                "location": "/testnet/knoten/22",
+                "network": "testnet"
+              },
+              {
+                "key": 23,
+                "number": 42,
+                "mac": "02caffeebabe",
+                "created_at": 1618579261185,
+                "last_seen": 1649942460672,
+                "location": "/testnet/knoten/42",
+                "network": "testnet"
+              },
+              {
+                "key": 42,
+                "number": 23,
+                "mac": "02c4ff33b4b3",
+                "created_at": 1620320194435,
+                "last_seen": 1620523256929,
+                "location": "/ffweimar/knoten/23",
+                "network": "ffweimar"
+              }
+            ]
+
+        """.trimIndent()
+        webTestClient.mutate().filter(ExchangeFilterFunctions.basicAuthentication("adminuser", "adminpass")).build()
+            .post().uri("/importDatabase")
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .body(BodyInserters.fromValue(testdata))
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .consumeWith(
+                WebTestClientRestDocumentation.document(
+                    "importDatabase", Preprocessors.preprocessRequest(
+                        STANDARD_URI
+                    ), PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("[].key").description("Internal key").type(Long::class.java),
+                        PayloadDocumentation.fieldWithPath("[].last_seen")
+                            .description("Unix timestamp of last occurence")
+                            .type(Long::class.java),
+                        PayloadDocumentation.fieldWithPath("[].created_at").description("Unix timestamp of creation")
+                            .type(Long::class.java),
+                        PayloadDocumentation.fieldWithPath("[].location").description("Path of this resource")
+                            .type(String::class.java),
+                        PayloadDocumentation.fieldWithPath("[].mac").description("Mac address of this node")
+                            .type(String::class.java),
+                        PayloadDocumentation.fieldWithPath("[].network").description("Network name")
+                            .type(String::class.java),
+                        PayloadDocumentation.fieldWithPath("[].number").description("Node numnber")
+                            .type(Int::class.java)
+
+                    )
+                )
+            )
+
+        val node1 = registratorRepository.findByNumberAndNetwork(42, "testnet")
+        assertThat(node1).isNotNull
+        val node2 = registratorRepository.findByNumberAndNetwork(22, "testnet")
+        assertThat(node2?.lastSeen).isEqualTo(1)
     }
 
     companion object {

@@ -141,4 +141,12 @@ operation::deleteNode[snippets='curl-request,http-request,http-response,response
 
 Dumps the complete database, needs authentication
 
-operation::dumpDatabase[snippets='curl-request,http-request,http-response,response-body']
+operation::dumpDatabase[snippets='curl-request,http-request,http-response,response-fields']
+
+[[resources-importdatabase]]
+== Import database
+
+Imports the complete database, needs authentication.
+Existing entries will be updated.
+
+operation::importDatabase[snippets='curl-request,http-request,http-response,request-fields']

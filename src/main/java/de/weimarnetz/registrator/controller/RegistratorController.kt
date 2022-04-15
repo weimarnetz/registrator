@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
@@ -216,6 +217,19 @@ class RegistratorController(
     fun dumpDatabase(): ResponseEntity<List<Node>> {
         val nodes = registratorRepository.findAll().toList()
         return ResponseEntity.ok(nodes)
+    }
+
+    @PostMapping("/importDatabase")
+    @ResponseBody
+    fun importDatabase(@RequestBody nodes: List<Node>): ResponseEntity<Any> {
+        val nodeList = nodes
+            .filter { it.network != null }
+            .map {
+                val storedNode = registratorRepository.findByNumberAndNetwork(it.number, it.network!!)
+                storedNode?.copy(number = it.number, network = it.network, mac = it.mac, createdAt = it.createdAt) ?: it
+            }
+        registratorRepository.saveAll(nodeList)
+        return ResponseEntity.ok().build()
     }
 
 }
