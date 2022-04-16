@@ -1,7 +1,7 @@
 Weimarnetz Registrator
 ====
 
-[![Build Status](https://travis-ci.org/weimarnetz/registrator.svg?branch=master)](https://travis-ci.org/weimarnetz/registrator) [![codecov](https://codecov.io/gh/weimarnetz/registrator/branch/master/graph/badge.svg)](https://codecov.io/gh/weimarnetz/registrator)
+[![Build Status](https://travis-ci.com/weimarnetz/registrator.svg?branch=master)](https://travis-ci.com/weimarnetz/registrator) [![codecov](https://codecov.io/gh/weimarnetz/registrator/branch/master/graph/badge.svg)](https://codecov.io/gh/weimarnetz/registrator)
 
 Prerequisites
 ----
