@@ -6,7 +6,6 @@ Weimarnetz Registrator
 Prerequisites
 ----
 * jdk installed
-* vagrant installed
 * docker installed
 
 About
@@ -17,14 +16,14 @@ Things that are configured already:
 * [Actuator](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready)
 	* adds health check, jms, metrics, loggers, dependencies, ... endpoints
 * deployment via [Ansible](https://www.ansible.com/)
-	* deploys the application into a vagrant box for testing behaviour - ready to only adjust hosts and ssh config to 
-	have a server ready deployment. including serverside installation of:
+	* deploys the application into a vagrant box for testing behaviour - ready to only adjust hosts and ssh config to
+	  have a server ready deployment. including serverside installation of:
 		* jdk
-* shell script for dependency update checks
-	* check for maven property updates
-	* check for maven plugin updates
-	* check for maven dependency updates
 
-Start with ```mvn spring-boot:run```
+Run locally
+-----
 
-Find generated docs: ```https://weimarnetz.github.io/registrator/```
+* Start a local postgresql instance with `mvn docker:start`
+* Start the service with ```mvn spring-boot:run```
+
+Find generated docs at https://weimarnetz.github.io/registrator/
