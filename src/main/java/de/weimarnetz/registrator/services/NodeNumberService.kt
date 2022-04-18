@@ -4,7 +4,6 @@ import de.weimarnetz.registrator.configuration.NetworksConfiguration
 import de.weimarnetz.registrator.exceptions.NetworkNotFoundException
 import de.weimarnetz.registrator.exceptions.NoMoreNodesException
 import de.weimarnetz.registrator.repository.RegistratorRepository
-import org.apache.commons.lang3.tuple.Pair
 import org.springframework.stereotype.Component
 
 @Component
@@ -20,7 +19,7 @@ class NodeNumberService(
             .map { it.number }
             .sorted()
             .toList()
-        if (nodeNumbersList.size > nodeNumberBoundaries.right - nodeNumberBoundaries.left) {
+        if (nodeNumbersList.size > nodeNumberBoundaries.second - nodeNumberBoundaries.first) {
             throw NoMoreNodesException()
         }
         return findFirstMissing(nodeNumbersList, 0, nodeNumbersList.size - 1, network)
@@ -28,11 +27,11 @@ class NodeNumberService(
 
     @Throws(NetworkNotFoundException::class)
     fun isNodeNumberValid(nodeNumber: Int, network: String?): Boolean {
-        return nodeNumber >= getNodeNumberBoundaries(network).left && nodeNumber <= getNodeNumberBoundaries(network).right
+        return nodeNumber >= getNodeNumberBoundaries(network).first && nodeNumber <= getNodeNumberBoundaries(network).second
     }
 
     private fun findFirstMissing(list: List<Int>, start: Int, end: Int, network: String?): Int {
-        val minNodeNumber: Int = getNodeNumberBoundaries(network).left
+        val minNodeNumber: Int = getNodeNumberBoundaries(network).first
         val mid = (start + end) / 2
         // Left half has all elements from 0 to mid
         return when {
@@ -50,7 +49,7 @@ class NodeNumberService(
     @Throws(NetworkNotFoundException::class)
     private fun getNodeNumberBoundaries(network: String?): Pair<Int, Int> {
         return if (networksConfiguration.map.containsKey(network)) {
-            Pair.of(
+            Pair(
                 networksConfiguration.map[network]!!.minNodeNumber,
                 networksConfiguration.map[network]!!.maxNodeNumber
             )

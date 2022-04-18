@@ -4,21 +4,22 @@ import de.weimarnetz.registrator.services.NodeNumberService
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import javax.inject.Inject
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(classes = [RegistratorApplication::class])
-class RegistratorApplicationIT {
-    @Inject
-    private val applicationContext: ApplicationContext? = null
+class RegistratorApplicationIT(
+    @Autowired
+    private val applicationContext: ApplicationContext
+) {
 
     @Test
     fun contextLoads() {
         Assertions.assertThat(
-            applicationContext?.getBean(
+            applicationContext.getBean(
                 NodeNumberService::class.java
             )
         ).isNotNull
