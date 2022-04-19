@@ -1,8 +1,4 @@
 spring:
-    datasource:
-      url: jdbc:h2:/opt/{{ application_name }}/registrator.h2database;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     profiles:
       active: production
-    h2:
-      console:
-        enabled: false
+
