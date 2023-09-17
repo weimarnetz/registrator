@@ -55,3 +55,24 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./target/generated-docs
+      - name: Run playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          # Required, playbook filepath
+          playbook: playbook-application.yml
+          # Optional, directory where playbooks live
+          directory: ./deployment
+          # Optional, SSH private key
+          key: ${{secrets.SSH_KEY}}
+          # Optional, literal inventory file contents
+          inventory: |
+            [all]
+            ${{secrets.SSH_HOST}}
+
+          # Optional, additional flags to pass to ansible-playbook
+          options: |
+            --inventory .ansible_inventory
+            --user  ${{secrets.SSH_USER}}
+            --limit ${{secrets.SSH_HOST}}
+            --extra-vars "ansible_user=${{secrets.SSH_USER}}"
+            --verbose
