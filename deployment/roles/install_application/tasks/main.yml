@@ -31,5 +31,5 @@
 
 - name: "restart {{ application_name }}"
   systemd: name={{ application_name }} state=restarted enabled=true daemon_reload=true
-  async: 45
+  async: 60
   poll: 5

@@ -1,6 +1,6 @@
 ---
 - name: "deploy everything"
-  hosts: all
+  hosts: registrator
   become: yes
   become_method: sudo
 

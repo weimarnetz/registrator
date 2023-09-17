@@ -71,9 +71,8 @@ jobs:
 
           # Optional, additional flags to pass to ansible-playbook
           options: |
-            --inventory .ansible_inventory
+            --inventory inventories/hosts
             --user  ${{secrets.SSH_USER}}
             --limit ${{secrets.SSH_HOST}}
             --extra-vars "ansible_user=${{secrets.SSH_USER}}"
             --verbose
-            -vvv
