@@ -5,52 +5,57 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.User
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
+import org.springframework.security.web.SecurityFilterChain
+
 
 const val ADMIN_ROLE = "ADMIN"
 
 @Configuration
-class SecurityConfig : WebSecurityConfigurerAdapter() {
+class SecurityConfig {
     @Value("\${admin.user}")
     private val username: String? = null
 
     @Value("\${admin.password}")
     private val password: String? = null
 
-    override fun configure(http: HttpSecurity) {
-        http
-            .headers().frameOptions().sameOrigin()
-            .and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .httpBasic()
-            .and()
-            .csrf().disable()
-            .authorizeRequests()
-            .antMatchers(HttpMethod.GET, "/dumpDatabase").hasRole(ADMIN_ROLE)
-            .antMatchers(HttpMethod.GET).permitAll()
-            .antMatchers(HttpMethod.POST, "/importDatabase").hasRole(ADMIN_ROLE)
-            .antMatchers(HttpMethod.POST).permitAll()
-            .antMatchers(HttpMethod.PUT).permitAll()
-            .antMatchers(HttpMethod.OPTIONS).permitAll()
-            .regexMatchers("/(css|js|fonts)/.*").permitAll()
-            .antMatchers(HttpMethod.DELETE).hasRole(ADMIN_ROLE)
-            .anyRequest().authenticated()
+    @Bean
+    fun configure(http: HttpSecurity): SecurityFilterChain {
+        return http
+            .headers { headersConfigurer ->
+                headersConfigurer.frameOptions { it.sameOrigin() }
+            }.sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }.csrf { it.disable() }
+            .httpBasic {}
+            .authorizeHttpRequests {
+                it.requestMatchers(HttpMethod.GET, "/dumpDatabase").hasRole(ADMIN_ROLE)
+                it.requestMatchers(HttpMethod.GET).permitAll()
+                it.requestMatchers(HttpMethod.POST, "/importDatabase").hasRole(ADMIN_ROLE)
+                it.requestMatchers(HttpMethod.POST).permitAll()
+                it.requestMatchers(HttpMethod.PUT).permitAll()
+                it.requestMatchers(HttpMethod.OPTIONS).permitAll()
+                it.requestMatchers("/(css|js|fonts)/.*").permitAll()
+                it.requestMatchers(HttpMethod.DELETE).hasRole(ADMIN_ROLE)
+                it.anyRequest().authenticated()
+            }.build()
+
     }
 
+
     @Bean
-    public override fun userDetailsService(): UserDetailsService? {
-        // Set the inMemoryAuthentication object with the given credentials:
-        val manager = InMemoryUserDetailsManager()
+    fun userDetailsService(): InMemoryUserDetailsManager {
         val encodedPassword = passwordEncoder().encode(password)
-        manager.createUser(User.withUsername(username).password(encodedPassword).roles(ADMIN_ROLE).build())
-        return manager
+        val user = User
+            .withUsername(username)
+            .password(encodedPassword)
+            .roles(ADMIN_ROLE)
+            .build()
+        return InMemoryUserDetailsManager(user)
     }
 
     @Bean

@@ -1,11 +1,11 @@
 package de.weimarnetz.registrator.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.Table
-import javax.persistence.UniqueConstraint
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 
 @Entity
 @Table(uniqueConstraints = [UniqueConstraint(columnNames = ["number", "network"]), UniqueConstraint(columnNames = ["network", "mac"])])

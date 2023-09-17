@@ -21,6 +21,6 @@ internal class RegistratorControllerIT(
         val time = registratorController.getTime()
 
         // then
-        Assertions.assertThat(time.statusCode).isEqualByComparingTo(HttpStatus.OK)
+        Assertions.assertThat(time.statusCode).isEqualTo(HttpStatus.OK)
     }
 }
