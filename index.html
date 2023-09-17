@@ -678,9 +678,9 @@ use of HTTP status codes.</p>
 <h3 id="resources-time_curl_request"><a class="link" href="#resources-time_curl_request">Curl request</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:45397/time' -i -X GET \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:42169/time' -i -X GET \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -691,8 +691,8 @@ use of HTTP status codes.</p>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /time HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
-host: localhost:45397
+user-agent: ReactorNetty/1.1.10
+host: localhost:42169
 Accept: application/json</code></pre>
 </div>
 </div>
@@ -703,18 +703,18 @@ Accept: application/json</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Sun, 17 Sep 2023 11:05:09 GMT
+Date: Sun, 17 Sep 2023 12:21:53 GMT
 Content-Length: 27
 
 {
-  "now" : 1694948710175
+  "now" : 1694953313849
 }</code></pre>
 </div>
 </div>
@@ -723,8 +723,8 @@ Content-Length: 27
 <h3 id="resources-time_response_body"><a class="link" href="#resources-time_response_body">Response body</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
-  "now" : 1694948710175
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
+  "now" : 1694953313849
 }</code></pre>
 </div>
 </div>
@@ -767,7 +767,7 @@ Content-Length: 27
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://reg.weimarnetz.de/ffweimar/knoten/2' -i -X GET \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -778,7 +778,7 @@ Content-Length: 27
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /ffweimar/knoten/2 HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
+user-agent: ReactorNetty/1.1.10
 Accept: application/json
 Host: reg.weimarnetz.de</code></pre>
 </div>
@@ -790,21 +790,21 @@ Host: reg.weimarnetz.de</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Sun, 17 Sep 2023 11:05:10 GMT
+Date: Sun, 17 Sep 2023 12:21:53 GMT
 Content-Length: 235
 
 {
   "message" : "ok",
   "status" : 200,
   "result" : {
-    "key" : 42,
+    "key" : 44,
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
@@ -820,11 +820,11 @@ Content-Length: 235
 <h3 id="resources-querynode_response_body"><a class="link" href="#resources-querynode_response_body">Response body</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "message" : "ok",
   "status" : 200,
   "result" : {
-    "key" : 42,
+    "key" : 44,
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
@@ -914,7 +914,7 @@ Content-Length: 235
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://reg.weimarnetz.de/ffweimar/knoten' -i -X GET \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -925,7 +925,7 @@ Content-Length: 235
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /ffweimar/knoten HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
+user-agent: ReactorNetty/1.1.10
 Accept: application/json
 Host: reg.weimarnetz.de</code></pre>
 </div>
@@ -937,21 +937,21 @@ Host: reg.weimarnetz.de</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Sun, 17 Sep 2023 11:05:10 GMT
+Date: Sun, 17 Sep 2023 12:21:53 GMT
 Content-Length: 421
 
 {
   "message" : "Ok",
   "status" : 200,
   "result" : [ {
-    "key" : 38,
+    "key" : 40,
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
@@ -959,7 +959,7 @@ Content-Length: 421
     "location" : "/ffweimar/knoten/2",
     "network" : "ffweimar"
   }, {
-    "key" : 39,
+    "key" : 41,
     "number" : 3,
     "mac" : "03caffeebabe",
     "created_at" : 123,
@@ -975,11 +975,11 @@ Content-Length: 421
 <h3 id="resources-querynodes_response_body"><a class="link" href="#resources-querynodes_response_body">Response body</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "message" : "Ok",
   "status" : 200,
   "result" : [ {
-    "key" : 38,
+    "key" : 40,
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
@@ -987,7 +987,7 @@ Content-Length: 421
     "location" : "/ffweimar/knoten/2",
     "network" : "ffweimar"
   }, {
-    "key" : 39,
+    "key" : 41,
     "number" : 3,
     "mac" : "03caffeebabe",
     "created_at" : 123,
@@ -1077,7 +1077,7 @@ Content-Length: 421
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://reg.weimarnetz.de/ffweimar/knotenByMac?mac=02:ca:ff:ee:ba:be' -i -X GET \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -1088,7 +1088,7 @@ Content-Length: 421
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /ffweimar/knotenByMac?mac=02:ca:ff:ee:ba:be HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
+user-agent: ReactorNetty/1.1.10
 Accept: application/json
 Host: reg.weimarnetz.de</code></pre>
 </div>
@@ -1100,21 +1100,21 @@ Host: reg.weimarnetz.de</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Sun, 17 Sep 2023 11:05:09 GMT
+Date: Sun, 17 Sep 2023 12:21:53 GMT
 Content-Length: 235
 
 {
   "message" : "ok",
   "status" : 200,
   "result" : {
-    "key" : 11,
+    "key" : 13,
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
@@ -1130,11 +1130,11 @@ Content-Length: 235
 <h3 id="resources-querynodeByMac_response_body"><a class="link" href="#resources-querynodeByMac_response_body">Response body</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "message" : "ok",
   "status" : 200,
   "result" : {
-    "key" : 11,
+    "key" : 13,
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
@@ -1224,7 +1224,7 @@ Content-Length: 235
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://reg.weimarnetz.de/ffweimar/knoten?mac=04caffeebabe&amp;pass=test' -i -X POST \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'transfer-encoding: chunked' \
     -H 'Accept: application/json'</code></pre>
 </div>
@@ -1236,10 +1236,11 @@ Content-Length: 235
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /ffweimar/knoten?mac=04caffeebabe&amp;pass=test HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
+user-agent: ReactorNetty/1.1.10
 transfer-encoding: chunked
 Accept: application/json
-Host: reg.weimarnetz.de</code></pre>
+Host: reg.weimarnetz.de
+Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
 </div>
 </div>
@@ -1248,27 +1249,27 @@ Host: reg.weimarnetz.de</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
-Location: http://localhost:45397/ffweimar/knoten/4
+Location: http://localhost:42169/ffweimar/knoten/4
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Sun, 17 Sep 2023 11:05:10 GMT
+Date: Sun, 17 Sep 2023 12:21:54 GMT
 Content-Length: 266
 
 {
   "message" : "Node created!",
   "status" : 201,
   "result" : {
-    "key" : 52,
+    "key" : 54,
     "number" : 4,
     "mac" : "04caffeebabe",
-    "created_at" : 1694948710888,
-    "last_seen" : 1694948710888,
+    "created_at" : 1694953314653,
+    "last_seen" : 1694953314653,
     "location" : "/ffweimar/knoten/4",
     "network" : "ffweimar"
   }
@@ -1280,15 +1281,15 @@ Content-Length: 266
 <h3 id="resources-addnode_response_body"><a class="link" href="#resources-addnode_response_body">Response body</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "message" : "Node created!",
   "status" : 201,
   "result" : {
-    "key" : 52,
+    "key" : 54,
     "number" : 4,
     "mac" : "04caffeebabe",
-    "created_at" : 1694948710888,
-    "last_seen" : 1694948710888,
+    "created_at" : 1694953314653,
+    "last_seen" : 1694953314653,
     "location" : "/ffweimar/knoten/4",
     "network" : "ffweimar"
   }
@@ -1374,7 +1375,7 @@ Content-Length: 266
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://reg.weimarnetz.de/POST/ffweimar/knoten?mac=04caffeebabe&amp;pass=test' -i -X GET \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -1385,7 +1386,7 @@ Content-Length: 266
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /POST/ffweimar/knoten?mac=04caffeebabe&amp;pass=test HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
+user-agent: ReactorNetty/1.1.10
 Accept: application/json
 Host: reg.weimarnetz.de</code></pre>
 </div>
@@ -1396,27 +1397,27 @@ Host: reg.weimarnetz.de</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
-Location: http://localhost:45397/ffweimar/knoten/4
+Location: http://localhost:42169/ffweimar/knoten/4
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Sun, 17 Sep 2023 11:05:10 GMT
+Date: Sun, 17 Sep 2023 12:21:54 GMT
 Content-Length: 266
 
 {
   "message" : "Node created!",
   "status" : 201,
   "result" : {
-    "key" : 68,
+    "key" : 70,
     "number" : 4,
     "mac" : "04caffeebabe",
-    "created_at" : 1694948711279,
-    "last_seen" : 1694948711279,
+    "created_at" : 1694953315056,
+    "last_seen" : 1694953315056,
     "location" : "/ffweimar/knoten/4",
     "network" : "ffweimar"
   }
@@ -1428,15 +1429,15 @@ Content-Length: 266
 <h3 id="resources-addnodeviaget_response_body"><a class="link" href="#resources-addnodeviaget_response_body">Response body</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "message" : "Node created!",
   "status" : 201,
   "result" : {
-    "key" : 68,
+    "key" : 70,
     "number" : 4,
     "mac" : "04caffeebabe",
-    "created_at" : 1694948711279,
-    "last_seen" : 1694948711279,
+    "created_at" : 1694953315056,
+    "last_seen" : 1694953315056,
     "location" : "/ffweimar/knoten/4",
     "network" : "ffweimar"
   }
@@ -1522,7 +1523,7 @@ Content-Length: 266
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://reg.weimarnetz.de/ffweimar/knoten/10?mac=05caffeebabe&amp;pass=test' -i -X PUT \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'transfer-encoding: chunked' \
     -H 'Accept: application/json'</code></pre>
 </div>
@@ -1534,10 +1535,11 @@ Content-Length: 266
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /ffweimar/knoten/10?mac=05caffeebabe&amp;pass=test HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
+user-agent: ReactorNetty/1.1.10
 transfer-encoding: chunked
 Accept: application/json
-Host: reg.weimarnetz.de</code></pre>
+Host: reg.weimarnetz.de
+Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
 </div>
 </div>
@@ -1546,27 +1548,27 @@ Host: reg.weimarnetz.de</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
-Location: http://localhost:45397/ffweimar/knoten/10
+Location: http://localhost:42169/ffweimar/knoten/10
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Sun, 17 Sep 2023 11:05:10 GMT
+Date: Sun, 17 Sep 2023 12:21:54 GMT
 Content-Length: 268
 
 {
   "message" : "Node created!",
   "status" : 201,
   "result" : {
-    "key" : 60,
+    "key" : 62,
     "number" : 10,
     "mac" : "05caffeebabe",
-    "created_at" : 1694948711187,
-    "last_seen" : 1694948711187,
+    "created_at" : 1694953314942,
+    "last_seen" : 1694953314942,
     "location" : "/ffweimar/knoten/10",
     "network" : "ffweimar"
   }
@@ -1578,15 +1580,15 @@ Content-Length: 268
 <h3 id="resources-updateode_response_body"><a class="link" href="#resources-updateode_response_body">Response body</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "message" : "Node created!",
   "status" : 201,
   "result" : {
-    "key" : 60,
+    "key" : 62,
     "number" : 10,
     "mac" : "05caffeebabe",
-    "created_at" : 1694948711187,
-    "last_seen" : 1694948711187,
+    "created_at" : 1694953314942,
+    "last_seen" : 1694953314942,
     "location" : "/ffweimar/knoten/10",
     "network" : "ffweimar"
   }
@@ -1672,7 +1674,7 @@ Content-Length: 268
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://reg.weimarnetz.de/ffweimar/knoten/2?mac=02caffeebabe&amp;pass=test' -i -X PUT \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'transfer-encoding: chunked' \
     -H 'Accept: application/json'</code></pre>
 </div>
@@ -1684,10 +1686,11 @@ Content-Length: 268
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /ffweimar/knoten/2?mac=02caffeebabe&amp;pass=test HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
+user-agent: ReactorNetty/1.1.10
 transfer-encoding: chunked
 Accept: application/json
-Host: reg.weimarnetz.de</code></pre>
+Host: reg.weimarnetz.de
+Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
 </div>
 </div>
@@ -1697,25 +1700,25 @@ Host: reg.weimarnetz.de</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Sun, 17 Sep 2023 11:05:09 GMT
+Date: Sun, 17 Sep 2023 12:21:53 GMT
 Content-Length: 250
 
 {
   "message" : "updated",
   "status" : 200,
   "result" : {
-    "key" : 15,
+    "key" : 17,
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
-    "last_seen" : 1694948710140,
+    "last_seen" : 1694953313786,
     "location" : "/ffweimar/knoten/2",
     "network" : "ffweimar"
   }
@@ -1727,15 +1730,15 @@ Content-Length: 250
 <h3 id="resources-updateode_response_body"><a class="link" href="#resources-updateode_response_body">Response body</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "message" : "updated",
   "status" : 200,
   "result" : {
-    "key" : 15,
+    "key" : 17,
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
-    "last_seen" : 1694948710140,
+    "last_seen" : 1694953313786,
     "location" : "/ffweimar/knoten/2",
     "network" : "ffweimar"
   }
@@ -1821,7 +1824,7 @@ Content-Length: 250
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://reg.weimarnetz.de/PUT/ffweimar/knoten/2?mac=02caffeebabe&amp;pass=test' -i -X GET \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -1832,7 +1835,7 @@ Content-Length: 250
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /PUT/ffweimar/knoten/2?mac=02caffeebabe&amp;pass=test HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
+user-agent: ReactorNetty/1.1.10
 Accept: application/json
 Host: reg.weimarnetz.de</code></pre>
 </div>
@@ -1844,25 +1847,25 @@ Host: reg.weimarnetz.de</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Sun, 17 Sep 2023 11:05:09 GMT
-Content-Length: 249
+Date: Sun, 17 Sep 2023 12:21:53 GMT
+Content-Length: 250
 
 {
   "message" : "updated",
   "status" : 200,
   "result" : {
-    "key" : 9,
+    "key" : 11,
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
-    "last_seen" : 1694948709997,
+    "last_seen" : 1694953313602,
     "location" : "/ffweimar/knoten/2",
     "network" : "ffweimar"
   }
@@ -1874,15 +1877,15 @@ Content-Length: 249
 <h3 id="resources-updateodeviaget_response_body"><a class="link" href="#resources-updateodeviaget_response_body">Response body</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
+<pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
   "message" : "updated",
   "status" : 200,
   "result" : {
-    "key" : 9,
+    "key" : 11,
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
-    "last_seen" : 1694948709997,
+    "last_seen" : 1694953313602,
     "location" : "/ffweimar/knoten/2",
     "network" : "ffweimar"
   }
@@ -1968,7 +1971,7 @@ Content-Length: 249
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://reg.weimarnetz.de/ffweimar/knoten/4' -i -u 'adminuser:adminpass' -X DELETE \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'accept: */*'</code></pre>
 </div>
 </div>
@@ -1979,7 +1982,7 @@ Content-Length: 249
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /ffweimar/knoten/4 HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
+user-agent: ReactorNetty/1.1.10
 accept: */*
 Authorization: Basic YWRtaW51c2VyOmFkbWlucGFzcw==
 Host: reg.weimarnetz.de</code></pre>
@@ -1992,12 +1995,12 @@ Host: reg.weimarnetz.de</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Date: Sun, 17 Sep 2023 11:05:11 GMT</code></pre>
+Date: Sun, 17 Sep 2023 12:21:54 GMT</code></pre>
 </div>
 </div>
 </div>
@@ -2023,7 +2026,7 @@ Date: Sun, 17 Sep 2023 11:05:11 GMT</code></pre>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://reg.weimarnetz.de/dumpDatabase' -i -u 'adminuser:adminpass' -X GET \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'accept: */*'</code></pre>
 </div>
 </div>
@@ -2034,7 +2037,7 @@ Date: Sun, 17 Sep 2023 11:05:11 GMT</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /dumpDatabase HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
+user-agent: ReactorNetty/1.1.10
 accept: */*
 Authorization: Basic YWRtaW51c2VyOmFkbWlucGFzcw==
 Host: reg.weimarnetz.de</code></pre>
@@ -2047,18 +2050,18 @@ Host: reg.weimarnetz.de</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Sun, 17 Sep 2023 11:05:09 GMT
-Content-Length: 517
+Date: Sun, 17 Sep 2023 12:21:52 GMT
+Content-Length: 518
 
 [ {
-  "key" : 6,
+  "key" : 8,
   "number" : 2,
   "mac" : "02caffeebabe",
   "created_at" : 123,
@@ -2066,7 +2069,7 @@ Content-Length: 517
   "location" : "/ffweimar/knoten/2",
   "network" : "ffweimar"
 }, {
-  "key" : 7,
+  "key" : 9,
   "number" : 3,
   "mac" : "03caffeebabe",
   "created_at" : 123,
@@ -2074,11 +2077,11 @@ Content-Length: 517
   "location" : "/ffweimar/knoten/3",
   "network" : "ffweimar"
 }, {
-  "key" : 8,
+  "key" : 10,
   "number" : 4,
   "mac" : "08caffeebabe",
-  "created_at" : 1694948709523,
-  "last_seen" : 1694948709523,
+  "created_at" : 1694953313012,
+  "last_seen" : 1694953313012,
   "location" : "/ffweimar/knoten/4",
   "network" : "ffweimar"
 } ]</code></pre>
@@ -2154,7 +2157,7 @@ Existing entries will be updated.</p>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://reg.weimarnetz.de/importDatabase' -i -u 'adminuser:adminpass' -X POST \
     -H 'accept-encoding: gzip' \
-    -H 'user-agent: ReactorNetty/1.0.35' \
+    -H 'user-agent: ReactorNetty/1.1.10' \
     -H 'accept: */*' \
     -H 'Content-Type: application/json' \
     -d '[
@@ -2196,7 +2199,7 @@ Existing entries will be updated.</p>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /importDatabase HTTP/1.1
 accept-encoding: gzip
-user-agent: ReactorNetty/1.0.35
+user-agent: ReactorNetty/1.1.10
 accept: */*
 Content-Type: application/json
 Authorization: Basic YWRtaW51c2VyOmFkbWlucGFzcw==
@@ -2241,12 +2244,12 @@ Host: reg.weimarnetz.de
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
 X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
+X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Date: Sun, 17 Sep 2023 11:05:10 GMT</code></pre>
+Date: Sun, 17 Sep 2023 12:21:54 GMT</code></pre>
 </div>
 </div>
 </div>
@@ -2309,7 +2312,7 @@ Date: Sun, 17 Sep 2023 11:05:10 GMT</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-09-17 11:03:55 UTC
+Last updated 2023-09-17 12:20:34 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
