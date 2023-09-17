@@ -61,7 +61,7 @@ jobs:
       - name: debug
         run: |
           ls -al
-          ls -al ./deployment
+          ls -al ./target
       - name: Run playbook
         uses: dawidd6/action-ansible-playbook@v2
         with:
