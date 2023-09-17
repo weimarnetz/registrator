@@ -76,3 +76,4 @@ jobs:
             --limit ${{secrets.SSH_HOST}}
             --extra-vars "ansible_user=${{secrets.SSH_USER}}"
             --verbose
+            -vvv
