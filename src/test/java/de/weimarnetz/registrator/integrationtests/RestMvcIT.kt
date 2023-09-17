@@ -10,11 +10,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.http.MediaType.TEXT_PLAIN
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.operation.preprocess.Preprocessors
@@ -69,6 +70,14 @@ class RestMvcIT(
     @AfterEach
     fun tearDown() {
         registratorRepository.deleteAll()
+    }
+
+    @Test
+    fun testAssetsAccess() {
+        webTestClient.get().uri("/js/plates.js").accept(TEXT_PLAIN)
+            .exchange()
+            .expectStatus()
+            .is2xxSuccessful
     }
 
     @Test

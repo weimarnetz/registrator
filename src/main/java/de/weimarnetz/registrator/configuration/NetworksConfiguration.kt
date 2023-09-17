@@ -1,9 +1,7 @@
 package de.weimarnetz.registrator.configuration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "network")
 data class NetworksConfiguration(
     val map: Map<String, NetworkInformation>
