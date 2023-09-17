@@ -39,7 +39,7 @@ jobs:
           name: successful-build
           retention-days: 5
           path: |
-            target/*.jar
+            target
             deployment
 
   deploy:
@@ -75,4 +75,3 @@ jobs:
             --user  ${{secrets.SSH_USER}}
             --limit ${{secrets.SSH_HOST}}
             --extra-vars "ansible_user=${{secrets.SSH_USER}}"
-            --verbose
