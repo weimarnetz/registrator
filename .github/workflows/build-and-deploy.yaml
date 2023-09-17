@@ -39,7 +39,7 @@ jobs:
           name: successful-build
           retention-days: 5
           path: |
-            target
+            target/*.jar
             deployment
 
   deploy:
@@ -50,7 +50,9 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: successful-build
-          path: target
+          path: |
+            target
+            deployment
       - name: Deploy Documentation
         uses: peaceiris/actions-gh-pages@v3
         with:
