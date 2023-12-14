@@ -34,7 +34,7 @@ jobs:
       - name: Code Quality
         uses: codecov/codecov-action@v3
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: successful-build
           retention-days: 5
