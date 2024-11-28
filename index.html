@@ -675,7 +675,7 @@ use of HTTP status codes.</p>
 <h3 id="resources-time_curl_request"><a class="link" href="#resources-time_curl_request">Curl request</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:35765/time' -i -X GET \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:41481/time' -i -X GET \
     -H 'accept-encoding: gzip' \
     -H 'user-agent: ReactorNetty/1.1.23' \
     -H 'Accept: application/json'</code></pre>
@@ -689,7 +689,7 @@ use of HTTP status codes.</p>
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /time HTTP/1.1
 accept-encoding: gzip
 user-agent: ReactorNetty/1.1.23
-host: localhost:35765
+host: localhost:41481
 Accept: application/json</code></pre>
 </div>
 </div>
@@ -707,11 +707,11 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Tue, 19 Nov 2024 03:22:48 GMT
+Date: Thu, 28 Nov 2024 14:55:40 GMT
 Content-Length: 27
 
 {
-  "now" : 1731986568048
+  "now" : 1732805739995
 }</code></pre>
 </div>
 </div>
@@ -721,7 +721,7 @@ Content-Length: 27
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-json hljs" data-lang="json">{
-  "now" : 1731986568048
+  "now" : 1732805739995
 }</code></pre>
 </div>
 </div>
@@ -794,7 +794,7 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Tue, 19 Nov 2024 03:22:48 GMT
+Date: Thu, 28 Nov 2024 14:55:40 GMT
 Content-Length: 235
 
 {
@@ -941,7 +941,7 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Tue, 19 Nov 2024 03:22:48 GMT
+Date: Thu, 28 Nov 2024 14:55:40 GMT
 Content-Length: 421
 
 {
@@ -1104,7 +1104,7 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Tue, 19 Nov 2024 03:22:47 GMT
+Date: Thu, 28 Nov 2024 14:55:39 GMT
 Content-Length: 235
 
 {
@@ -1246,7 +1246,7 @@ Content-Type: application/x-www-form-urlencoded</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
-Location: http://localhost:35765/ffweimar/knoten/4
+Location: http://localhost:41481/ffweimar/knoten/4
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1255,7 +1255,7 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Tue, 19 Nov 2024 03:22:48 GMT
+Date: Thu, 28 Nov 2024 14:55:40 GMT
 Content-Length: 266
 
 {
@@ -1265,8 +1265,8 @@ Content-Length: 266
     "key" : 54,
     "number" : 4,
     "mac" : "04caffeebabe",
-    "created_at" : 1731986568724,
-    "last_seen" : 1731986568724,
+    "created_at" : 1732805740642,
+    "last_seen" : 1732805740642,
     "location" : "/ffweimar/knoten/4",
     "network" : "ffweimar"
   }
@@ -1285,8 +1285,8 @@ Content-Length: 266
     "key" : 54,
     "number" : 4,
     "mac" : "04caffeebabe",
-    "created_at" : 1731986568724,
-    "last_seen" : 1731986568724,
+    "created_at" : 1732805740642,
+    "last_seen" : 1732805740642,
     "location" : "/ffweimar/knoten/4",
     "network" : "ffweimar"
   }
@@ -1394,7 +1394,7 @@ Host: reg.weimarnetz.de</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
-Location: http://localhost:35765/ffweimar/knoten/4
+Location: http://localhost:41481/ffweimar/knoten/4
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1403,7 +1403,7 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Tue, 19 Nov 2024 03:22:49 GMT
+Date: Thu, 28 Nov 2024 14:55:41 GMT
 Content-Length: 266
 
 {
@@ -1413,8 +1413,8 @@ Content-Length: 266
     "key" : 70,
     "number" : 4,
     "mac" : "04caffeebabe",
-    "created_at" : 1731986569083,
-    "last_seen" : 1731986569083,
+    "created_at" : 1732805741022,
+    "last_seen" : 1732805741022,
     "location" : "/ffweimar/knoten/4",
     "network" : "ffweimar"
   }
@@ -1433,8 +1433,8 @@ Content-Length: 266
     "key" : 70,
     "number" : 4,
     "mac" : "04caffeebabe",
-    "created_at" : 1731986569083,
-    "last_seen" : 1731986569083,
+    "created_at" : 1732805741022,
+    "last_seen" : 1732805741022,
     "location" : "/ffweimar/knoten/4",
     "network" : "ffweimar"
   }
@@ -1545,7 +1545,7 @@ Content-Type: application/x-www-form-urlencoded</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
-Location: http://localhost:35765/ffweimar/knoten/10
+Location: http://localhost:41481/ffweimar/knoten/10
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -1554,7 +1554,7 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Tue, 19 Nov 2024 03:22:49 GMT
+Date: Thu, 28 Nov 2024 14:55:40 GMT
 Content-Length: 268
 
 {
@@ -1564,8 +1564,8 @@ Content-Length: 268
     "key" : 62,
     "number" : 10,
     "mac" : "05caffeebabe",
-    "created_at" : 1731986568997,
-    "last_seen" : 1731986568997,
+    "created_at" : 1732805740930,
+    "last_seen" : 1732805740930,
     "location" : "/ffweimar/knoten/10",
     "network" : "ffweimar"
   }
@@ -1584,8 +1584,8 @@ Content-Length: 268
     "key" : 62,
     "number" : 10,
     "mac" : "05caffeebabe",
-    "created_at" : 1731986568997,
-    "last_seen" : 1731986568997,
+    "created_at" : 1732805740930,
+    "last_seen" : 1732805740930,
     "location" : "/ffweimar/knoten/10",
     "network" : "ffweimar"
   }
@@ -1704,7 +1704,7 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Tue, 19 Nov 2024 03:22:48 GMT
+Date: Thu, 28 Nov 2024 14:55:39 GMT
 Content-Length: 250
 
 {
@@ -1715,7 +1715,7 @@ Content-Length: 250
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
-    "last_seen" : 1731986568013,
+    "last_seen" : 1732805739963,
     "location" : "/ffweimar/knoten/2",
     "network" : "ffweimar"
   }
@@ -1735,7 +1735,7 @@ Content-Length: 250
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
-    "last_seen" : 1731986568013,
+    "last_seen" : 1732805739963,
     "location" : "/ffweimar/knoten/2",
     "network" : "ffweimar"
   }
@@ -1851,7 +1851,7 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Tue, 19 Nov 2024 03:22:47 GMT
+Date: Thu, 28 Nov 2024 14:55:39 GMT
 Content-Length: 250
 
 {
@@ -1862,7 +1862,7 @@ Content-Length: 250
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
-    "last_seen" : 1731986567897,
+    "last_seen" : 1732805739848,
     "location" : "/ffweimar/knoten/2",
     "network" : "ffweimar"
   }
@@ -1882,7 +1882,7 @@ Content-Length: 250
     "number" : 2,
     "mac" : "02caffeebabe",
     "created_at" : 123,
-    "last_seen" : 1731986567897,
+    "last_seen" : 1732805739848,
     "location" : "/ffweimar/knoten/2",
     "network" : "ffweimar"
   }
@@ -1997,7 +1997,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Date: Tue, 19 Nov 2024 03:22:49 GMT</code></pre>
+Date: Thu, 28 Nov 2024 14:55:41 GMT</code></pre>
 </div>
 </div>
 </div>
@@ -2054,7 +2054,7 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Tue, 19 Nov 2024 03:22:47 GMT
+Date: Thu, 28 Nov 2024 14:55:39 GMT
 Content-Length: 518
 
 [ {
@@ -2077,8 +2077,8 @@ Content-Length: 518
   "key" : 10,
   "number" : 4,
   "mac" : "08caffeebabe",
-  "created_at" : 1731986567551,
-  "last_seen" : 1731986567551,
+  "created_at" : 1732805739497,
+  "last_seen" : 1732805739497,
   "location" : "/ffweimar/knoten/4",
   "network" : "ffweimar"
 } ]</code></pre>
@@ -2246,7 +2246,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: SAMEORIGIN
-Date: Tue, 19 Nov 2024 03:22:48 GMT</code></pre>
+Date: Thu, 28 Nov 2024 14:55:40 GMT</code></pre>
 </div>
 </div>
 </div>
@@ -2309,7 +2309,7 @@ Date: Tue, 19 Nov 2024 03:22:48 GMT</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-11-19 03:21:55 UTC
+Last updated 2024-11-28 14:54:52 UTC
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
