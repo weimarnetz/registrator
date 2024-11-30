@@ -23,7 +23,6 @@ Things that are configured already:
 Run locally
 -----
 
-* Start a local postgresql instance with `mvn docker:start`
-* Start the service with ```mvn spring-boot:run```
+* Start the service with ```mvn exec:java```
 
 Find generated docs at https://weimarnetz.github.io/registrator/
