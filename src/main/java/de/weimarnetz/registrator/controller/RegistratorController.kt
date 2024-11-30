@@ -226,7 +226,8 @@ class RegistratorController(
             .filter { it.network != null }
             .map {
                 val storedNode = registratorRepository.findByNumberAndNetwork(it.number, it.network!!)
-                storedNode?.copy(number = it.number, network = it.network, mac = it.mac, createdAt = it.createdAt) ?: it
+                storedNode?.copy(number = it.number, network = it.network, mac = it.mac, createdAt = it.createdAt)
+                    ?: it.copy(key = null)
             }
         registratorRepository.saveAll(nodeList)
         return ResponseEntity.ok().build()
