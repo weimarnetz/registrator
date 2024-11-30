@@ -53,7 +53,9 @@ class IntegrationTestConfig {
         @DynamicPropertySource
         fun setContainer(registry: DynamicPropertyRegistry) {
             postgreSQLContainer.start()
-            registry.add("spring.datasource.sql") { "mongodb://localhost:${postgreSQLContainer.firstMappedPort}/registratordb" }
+            registry.add("spring.datasource.url") { "jdbc:postgresql://localhost:${postgreSQLContainer.firstMappedPort}/${postgreSQLContainer.databaseName}" }
+            registry.add("spring.datasource.username") { postgreSQLContainer.username }
+            registry.add("spring.datasource.password") { postgreSQLContainer.password }
         }
 
         @JvmStatic
