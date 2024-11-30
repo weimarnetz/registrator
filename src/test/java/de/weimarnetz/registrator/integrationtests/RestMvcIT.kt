@@ -1,5 +1,6 @@
 package de.weimarnetz.registrator.integrationtests
 
+import de.weimarnetz.registrator.IntegrationTestConfig
 import de.weimarnetz.registrator.model.Node
 import de.weimarnetz.registrator.model.NodeResponse
 import de.weimarnetz.registrator.repository.RegistratorRepository
@@ -7,45 +8,25 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.MediaType.TEXT_PLAIN
-import org.springframework.restdocs.RestDocumentationContextProvider
-import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.payload.PayloadDocumentation
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
-import java.time.Duration
 
-@ExtendWith(SpringExtension::class, RestDocumentationExtension::class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("testing")
-class RestMvcIT(
+internal class RestMvcIT(
     @Autowired
     private val registratorRepository: RegistratorRepository
-) {
-    @LocalServerPort
-    protected lateinit var port: String
-
-    protected lateinit var webTestClient: WebTestClient
+) : IntegrationTestConfig() {
 
     @BeforeEach
-    fun setUp(restDocumentation: RestDocumentationContextProvider?) {
-        webTestClient = WebTestClient.bindToServer().baseUrl("http://localhost:$port")
-            .filter(WebTestClientRestDocumentation.documentationConfiguration(restDocumentation))
-            .responseTimeout(Duration.ofSeconds(10))
-            .build()
+    fun setUp() {
         if (registratorRepository.count() < 2) {
             val node1 = Node(
                 network = "ffweimar",
@@ -506,7 +487,16 @@ class RestMvcIT(
 
     @Test
     fun testImportDatabase() {
-        registratorRepository.save(Node(1, 22, "0202caffbabe", 0, 1, "/testnet/knoten/22", "testnet"))
+        registratorRepository.save(
+            Node(
+                number = 22,
+                mac = "0202caffbabe",
+                createdAt = 0,
+                lastSeen = 1,
+                location = "/testnet/knoten/22",
+                network = "testnet"
+            )
+        )
         val testdata = """
             [
               {
@@ -591,7 +581,7 @@ class RestMvcIT(
             PayloadDocumentation.fieldWithPath("result.mac").description("Mac address of this node")
                 .type(String::class.java),
             PayloadDocumentation.fieldWithPath("result.network").description("Network name").type(String::class.java),
-            PayloadDocumentation.fieldWithPath("result.number").description("Node numnber").type(Int::class.java)
+            PayloadDocumentation.fieldWithPath("result.number").description("Node numnber").type(Int::class.java),
         )
         private val NODES_RESPONSE_SNIPPET = PayloadDocumentation.responseFields(
             PayloadDocumentation.fieldWithPath("status").description("HTTP Status code").type(Int::class.java),
