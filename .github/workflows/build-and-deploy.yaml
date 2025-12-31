@@ -34,7 +34,7 @@ jobs:
       - name: Code Quality
         uses: codecov/codecov-action@v5
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: successful-build
           retention-days: 5
@@ -47,7 +47,7 @@ jobs:
     needs: [ 'build' ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: successful-build
       - name: Deploy Documentation
