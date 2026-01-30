@@ -5,9 +5,9 @@
   become_method: sudo
 
   vars:
-    - application_jar: '../target/registratorapp-1.0-SNAPSHOT.jar'
-    - application_name: 'registratorapp'
-    - jdk_version: 'zulu17-jdk'
+    application_jar: '../target/registratorapp-1.0-SNAPSHOT.jar'
+    application_name: 'registratorapp'
+    jdk_version: 'zulu17-jdk'
 
   #roles:
     #- role: check_preconditions
