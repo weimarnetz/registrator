@@ -54,7 +54,7 @@ class RegistratorController(
         } else {
             log.error { "Network $network not found!" }
         }
-        return ResponseEntity.notFound().build()
+        return ResponseEntity.notFound().build<NodeResponse>()
     }
 
     @PostMapping(value = ["/{network}/knoten"])
@@ -62,13 +62,13 @@ class RegistratorController(
     fun registerNodePost(
         @PathVariable network: String,
         @RequestParam mac: String?
-    ): ResponseEntity<NodeResponse?>? {
+    ): ResponseEntity<NodeResponse> {
         if (!macAddressService.isValidMacAddress(mac)) {
-            return ResponseEntity.badRequest().build()
+            return ResponseEntity.badRequest().build<NodeResponse>()
         }
         if (!networkVerificationService.isNetworkValid(network)) {
             log.error { "Network $network not found! mac: $mac" }
-            return ResponseEntity.notFound().build()
+            return ResponseEntity.notFound().build<NodeResponse>()
         }
         val normalizedMac = macAddressService.normalizeMacAddress(mac)
         val node = registratorRepository.findByNetworkAndMac(network, normalizedMac)
@@ -83,17 +83,17 @@ class RegistratorController(
             nodeNumberService.getNextAvailableNodeNumber(network)
         } catch (e: NoMoreNodesException) {
             log.error(e) { "No more node numbers available" }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build<NodeResponse>()
         }
         return saveNewNode(network, normalizedMac, currentTime, newNodeNumber)
     }
 
     @GetMapping(value = ["/{network}/knoten", "/GET/{network}/knoten", "/{network}/list", "/GET/{network}/list"])
     @ResponseBody
-    fun getNodes(@PathVariable network: String): ResponseEntity<NodesResponse?>? {
+    fun getNodes(@PathVariable network: String): ResponseEntity<NodesResponse> {
         if (!networkVerificationService.isNetworkValid(network)) {
             log.error { "Network $network not found!" }
-            return ResponseEntity.notFound().build()
+            return ResponseEntity.notFound().build<NodesResponse>()
         }
         val nodesResponse =
             NodesResponse(
@@ -109,7 +109,7 @@ class RegistratorController(
     fun registerNodeGet(
         @PathVariable network: String,
         @RequestParam mac: String?
-    ): ResponseEntity<NodeResponse?>? {
+    ): ResponseEntity<NodeResponse> {
         return registerNodePost(network, mac)
     }
 
@@ -119,16 +119,16 @@ class RegistratorController(
         @PathVariable network: String,
         @PathVariable nodeNumber: Int,
         @RequestParam mac: String?
-    ): ResponseEntity<NodeResponse?>? {
+    ): ResponseEntity<NodeResponse> {
         if (!macAddressService.isValidMacAddress(mac)) {
-            return ResponseEntity.badRequest().build()
+            return ResponseEntity.badRequest().build<NodeResponse>()
         }
         if (!networkVerificationService.isNetworkValid(network)) {
             log.warn { "Network $network not found!" }
-            return ResponseEntity.notFound().build()
+            return ResponseEntity.notFound().build<NodeResponse>()
         }
         if (!nodeNumberService.isNodeNumberValid(nodeNumber, network)) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build<NodeResponse>()
         }
         val normalizedMac = macAddressService.normalizeMacAddress(mac)
         val nodeByNumber = registratorRepository.findByNumberAndNetwork(nodeNumber, network)
@@ -152,7 +152,7 @@ class RegistratorController(
         @PathVariable network: String,
         @PathVariable nodeNumber: Int,
         @RequestParam mac: String?
-    ): ResponseEntity<NodeResponse?>? {
+    ): ResponseEntity<NodeResponse> {
         return updateNodePut(network, nodeNumber, mac)
     }
 
@@ -161,9 +161,9 @@ class RegistratorController(
     fun getNodeByMac(
         @PathVariable network: String,
         @RequestParam mac: String?
-    ): ResponseEntity<NodeResponse?>? {
+    ): ResponseEntity<NodeResponse> {
         if (!macAddressService.isValidMacAddress(mac)) {
-            return ResponseEntity.badRequest().build()
+            return ResponseEntity.badRequest().build<NodeResponse>()
         }
         if (networkVerificationService.isNetworkValid(network)) {
             val node = registratorRepository.findByNetworkAndMac(network, macAddressService.normalizeMacAddress(mac))
@@ -174,7 +174,7 @@ class RegistratorController(
         } else {
             log.error { "Network $network not found!" }
         }
-        return ResponseEntity.notFound().build()
+        return ResponseEntity.notFound().build<NodeResponse>()
     }
 
     private fun saveNewNode(
@@ -182,7 +182,7 @@ class RegistratorController(
         normalizedMac: String?,
         currentTime: Long,
         nodeNumber: Int
-    ): ResponseEntity<NodeResponse?> {
+    ): ResponseEntity<NodeResponse> {
         val newNode = Node(
             number = nodeNumber,
             createdAt = currentTime,
@@ -206,10 +206,10 @@ class RegistratorController(
             val node = registratorRepository.findByNumberAndNetwork(nodeNumber, network)
             if (node != null) {
                 registratorRepository.delete(node)
-                return ResponseEntity.noContent().build()
+                return ResponseEntity.noContent().build<Any>()
             }
         }
-        return ResponseEntity.notFound().build()
+        return ResponseEntity.notFound().build<Any>()
     }
 
     @GetMapping("/dumpDatabase")
@@ -230,7 +230,7 @@ class RegistratorController(
                     ?: it.copy(key = null)
             }
         registratorRepository.saveAll(nodeList)
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok().build<Any>()
     }
 
 }
