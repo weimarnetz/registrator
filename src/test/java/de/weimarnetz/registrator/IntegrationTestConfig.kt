@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
+import org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.restdocs.RestDocumentationContextProvider
@@ -27,16 +27,15 @@ import java.time.Duration
 @ActiveProfiles("testing")
 @DirtiesContext
 @AutoConfigureRestDocs(outputDir = "target/generated-snippets")
-class IntegrationTestConfig {
-
-    @Autowired
-    protected lateinit var webTestClient: WebTestClient
+abstract class IntegrationTestConfig {
 
     @LocalServerPort
     protected var port: Int = 0
 
+    protected lateinit var webTestClient: WebTestClient
+
     @BeforeEach
-    fun setUp(restDocumentation: RestDocumentationContextProvider) {
+    open fun setUp(restDocumentation: RestDocumentationContextProvider) {
         webTestClient = WebTestClient.bindToServer().baseUrl("http://localhost:$port")
             .filter(WebTestClientRestDocumentation.documentationConfiguration(restDocumentation))
             .responseTimeout(Duration.ofSeconds(10))

@@ -49,13 +49,15 @@ class SecurityConfig {
 
     @Bean
     fun userDetailsService(): InMemoryUserDetailsManager {
-        val encodedPassword = passwordEncoder().encode(password)
-        val user = User
-            .withUsername(username)
+        val user = username ?: throw IllegalStateException("admin.user must be configured")
+        val pwd = password ?: throw IllegalStateException("admin.password must be configured")
+        val encodedPassword = passwordEncoder().encode(pwd)
+        val userDetails = User
+            .withUsername(user)
             .password(encodedPassword)
             .roles(ADMIN_ROLE)
             .build()
-        return InMemoryUserDetailsManager(user)
+        return InMemoryUserDetailsManager(userDetails)
     }
 
     @Bean

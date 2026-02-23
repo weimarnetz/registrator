@@ -12,9 +12,6 @@ network:
       min-node-number: 2
       lease-days: 90
 spring:
-  jackson:
-    serialization:
-      indent_output: true
   messages:
     basename: i18n/messages
     cache-seconds: -1
